@@ -1,16 +1,27 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
-import { TrendingUp, AlertTriangle, Shield, CheckCircle } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Shield, CheckCircle, Download } from 'lucide-react';
 import { useApp } from './AppContext';
 import { getChartColors } from './helpers';
+import { exportDashboardToPDF } from './utils/pdfExport';
+import { canExportPDF } from './utils/tierConfig';
+import TierBadge from './TierBadge';
 import './Dashboard.css';
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
-  const { vendors, theme } = useApp();
+  const { vendors, assessments, theme, licenseTier, triggerUpgradeModal } = useApp();
   const colors = getChartColors(theme);
+
+  const handleExportDashboard = () => {
+    if (!canExportPDF(licenseTier)) {
+      triggerUpgradeModal('PDF export is available in Pro and Enterprise plans. Upgrade now!');
+      return;
+    }
+    exportDashboardToPDF(vendors, assessments, licenseTier);
+  };
   
   const critical = vendors.filter(v => v.riskScore >= 80).length;
   const high = vendors.filter(v => v.riskScore >= 60 && v.riskScore < 80).length;
@@ -114,9 +125,35 @@ const Dashboard = () => {
   return (
     <div className="page-content dashboard-page">
       <div className="page-header">
-        <h2>Dashboard Overview</h2>
-        <p>Real-time vendor risk monitoring and analytics</p>
+        <div>
+          <h2>Dashboard Overview</h2>
+          <p>Real-time vendor risk monitoring and analytics</p>
+        </div>
+        <div className="page-header-actions">
+          <TierBadge showUsage={true} />
+          <button 
+            className="btn btn-secondary"
+            onClick={handleExportDashboard}
+            title={canExportPDF(licenseTier) ? 'Export dashboard to PDF' : 'Upgrade to Pro for PDF export'}
+          >
+            <Download size={18} />
+            {canExportPDF(licenseTier) ? 'Export PDF' : 'PDF (Pro)'}
+          </button>
+        </div>
       </div>
+
+      {/* Free tier promotion banner */}
+      {licenseTier === 'free' && (
+        <div className="premium-banner">
+          <div className="banner-content">
+            <h3>🚀 Unlock Premium Features</h3>
+            <p>Upgrade to Pro for unlimited vendors, assessments, PDF exports, and more!</p>
+          </div>
+          <button className="btn btn-primary" onClick={() => triggerUpgradeModal('Unlock all features!')}>
+            Upgrade Now
+          </button>
+        </div>
+      )}
       
       <div className="metrics-grid">
         <div className="metric-card">

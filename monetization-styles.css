@@ -1,0 +1,209 @@
+/* Additional Monetization Feature Styles */
+
+/* Alert Styles */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.alert svg {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.alert strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.alert p {
+  margin: 0;
+}
+
+.alert-warning {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #d97706;
+}
+
+.alert-warning svg {
+  color: #f59e0b;
+}
+
+.alert-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+}
+
+.alert-danger svg {
+  color: #ef4444;
+}
+
+.alert .link {
+  color: var(--growth-green);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.alert .link:hover {
+  text-decoration: none;
+}
+
+/* Usage Indicators */
+.usage-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--card-bg-secondary);
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.usage-indicator span {
+  color: var(--text-secondary);
+}
+
+.usage-indicator .usage-warning {
+  color: var(--warning-amber);
+  font-weight: 600;
+}
+
+.usage-bar-small {
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.usage-bar-fill {
+  height: 100%;
+  background: var(--success-green);
+  border-radius: 2px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.usage-bar-warning {
+  background: var(--warning-amber);
+}
+
+/* Premium Banner */
+.premium-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--growth-green) 0%, var(--trust-mint) 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(51, 105, 30, 0.2);
+}
+
+.banner-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.banner-content p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.875rem;
+}
+
+.premium-banner .btn {
+  background: white;
+  color: var(--growth-green);
+  border: none;
+}
+
+.premium-banner .btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+/* Page Header Actions */
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Assessment Actions */
+.assessment-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.assessment-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Button Icon Variant */
+.btn-icon {
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form Hints */
+.form-hint {
+  display: block;
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.form-hint .link {
+  color: var(--growth-green);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.form-hint .link:hover {
+  text-decoration: none;
+}
+
+/* Disabled Button Styles */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .premium-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .page-header-actions {
+    flex-wrap: wrap;
+  }
+
+  .assessment-actions {
+    flex-direction: column;
+  }
+
+  .alert {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+

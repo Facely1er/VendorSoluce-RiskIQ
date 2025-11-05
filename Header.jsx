@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Moon, Sun, Shield } from 'lucide-react';
+import { Moon, Sun, Shield, Settings } from 'lucide-react';
 import { useApp } from './AppContext';
+import TierBadge from './TierBadge';
 import './Header.css';
 
 const Header = () => {
@@ -43,6 +44,12 @@ const Header = () => {
                 <div className="header-stat-label">Assessments</div>
               </div>
             </div>
+
+            <TierBadge showUsage={false} />
+            
+            <Link to="/settings" className="btn btn-secondary btn-icon" title="Settings">
+              <Settings size={20} />
+            </Link>
             
             <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}

@@ -1,0 +1,279 @@
+.upgrade-modal .modal-content {
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.upgrade-modal-content {
+  padding: 0;
+}
+
+.upgrade-modal .modal-header {
+  padding: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.upgrade-modal .modal-header h2 {
+  margin: 0 0 0.5rem 0;
+  color: var(--growth-green);
+}
+
+.upgrade-modal .modal-header p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+/* Current Usage */
+.current-usage {
+  padding: 1.5rem 2rem;
+  background: var(--card-bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.current-usage h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.usage-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.usage-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.usage-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.usage-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tier-badge-inline {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--trust-mint);
+  color: var(--growth-green);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+/* Pricing Grid */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.pricing-card {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+  border-color: var(--growth-green);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.pricing-card.recommended {
+  border-color: var(--growth-green);
+  box-shadow: 0 4px 12px rgba(51, 105, 30, 0.2);
+}
+
+.recommended-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: var(--growth-green);
+  color: white;
+  padding: 0.25rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pricing-header {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.tier-icon {
+  color: var(--growth-green);
+  margin-bottom: 0.5rem;
+}
+
+.pricing-header h3 {
+  margin: 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--growth-green);
+  margin: 0.5rem 0 0.25rem 0;
+}
+
+.price-detail {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.features-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color-light);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.features-list li:last-child {
+  border-bottom: none;
+}
+
+.check-icon {
+  color: var(--success-green);
+  flex-shrink: 0;
+}
+
+.btn-upgrade {
+  width: 100%;
+  padding: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-upgrade:disabled {
+  background: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Feature Comparison */
+.feature-comparison {
+  padding: 2rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--card-bg-secondary);
+}
+
+.feature-comparison h3 {
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.comparison-table thead {
+  background: var(--growth-green);
+  color: white;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-table th {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.comparison-table td {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table tbody tr:hover {
+  background: var(--card-bg-secondary);
+}
+
+.check-green {
+  color: var(--success-green);
+}
+
+.x-red {
+  color: var(--danger-red);
+}
+
+/* Guarantee Badge */
+.guarantee-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--trust-mint);
+  color: var(--growth-green);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .upgrade-modal .modal-content {
+    max-width: 95%;
+    margin: 1rem;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-table {
+    font-size: 0.75rem;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.5rem;
+  }
+
+  .usage-stats {
+    grid-template-columns: 1fr;
+  }
+}
+

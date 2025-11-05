@@ -271,3 +271,6 @@ body {
     display: none !important;
   }
 }
+
+/* Import Monetization Feature Styles */
+@import './monetization-styles.css';

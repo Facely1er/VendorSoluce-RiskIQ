@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, AlertCircle } from 'lucide-react';
 import { useApp } from './AppContext';
 import { getRiskLevel, getRiskBadgeClass, formatCurrency, formatDate } from './helpers';
+import { getUsagePercentage, isApproachingLimit, isAtLimit } from './utils/tierConfig';
 import './Vendors.css';
 
 const Vendors = () => {
-  const { vendors, addVendor, updateVendor, deleteVendor } = useApp();
+  const { vendors, addVendor, updateVendor, deleteVendor, licenseTier, getTierLimits, canAddNewVendor, triggerUpgradeModal } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -21,6 +22,11 @@ const Vendors = () => {
     notes: ''
   });
 
+  const tierLimits = getTierLimits();
+  const usagePercent = getUsagePercentage(licenseTier, vendors.length, 'vendors');
+  const approaching = isApproachingLimit(licenseTier, vendors.length, 'vendors');
+  const atLimit = isAtLimit(licenseTier, vendors.length, 'vendors');
+
   const filteredVendors = vendors.filter(v => {
     const matchesSearch = v.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (v.sector && v.sector.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -29,6 +35,12 @@ const Vendors = () => {
   });
 
   const handleOpenModal = (vendor = null) => {
+    // Check if user can add new vendor
+    if (!vendor && !canAddNewVendor()) {
+      triggerUpgradeModal(`You've reached your vendor limit (${tierLimits.maxVendors}). Upgrade to add more vendors.`);
+      return;
+    }
+
     if (vendor) {
       setEditingVendor(vendor);
       setFormData({
@@ -101,8 +113,45 @@ const Vendors = () => {
         <div>
           <h2>Vendor Management</h2>
           <p>Manage and monitor your vendor relationships</p>
+          {tierLimits.maxVendors !== Infinity && (
+            <div className="usage-indicator">
+              <span className={approaching ? 'usage-warning' : ''}>
+                {vendors.length} / {tierLimits.maxVendors} vendors
+              </span>
+              {usagePercent > 0 && (
+                <div className="usage-bar-small">
+                  <div 
+                    className={`usage-bar-fill ${approaching ? 'usage-bar-warning' : ''}`}
+                    style={{ width: `${usagePercent}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Approaching Limit Warning */}
+      {approaching && !atLimit && (
+        <div className="alert alert-warning">
+          <AlertCircle size={20} />
+          <div>
+            <strong>Approaching Limit</strong>
+            <p>You're using {vendors.length} of {tierLimits.maxVendors} vendors. <span className="link" onClick={() => triggerUpgradeModal('Upgrade for unlimited vendors')}>Upgrade now</span> for unlimited vendors.</p>
+          </div>
+        </div>
+      )}
+
+      {/* At Limit Warning */}
+      {atLimit && (
+        <div className="alert alert-danger">
+          <AlertCircle size={20} />
+          <div>
+            <strong>Vendor Limit Reached</strong>
+            <p>You've reached your maximum of {tierLimits.maxVendors} vendors. <span className="link" onClick={() => triggerUpgradeModal('Upgrade for unlimited vendors')}>Upgrade to Pro</span> to add more vendors.</p>
+          </div>
+        </div>
+      )}
 
       <div className="vendor-controls">
         <div className="search-bar">
@@ -127,9 +176,14 @@ const Vendors = () => {
             <option value="tactical">Tactical</option>
           </select>
         </div>
-        <button className="btn btn-primary" onClick={() => handleOpenModal()}>
+        <button 
+          className="btn btn-primary" 
+          onClick={() => handleOpenModal()}
+          disabled={atLimit}
+          title={atLimit ? `Vendor limit reached (${tierLimits.maxVendors})` : 'Add new vendor'}
+        >
           <Plus size={20} />
-          Add Vendor
+          {atLimit ? `Limit Reached` : 'Add Vendor'}
         </button>
       </div>
 

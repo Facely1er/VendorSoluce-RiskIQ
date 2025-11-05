@@ -1,414 +1,239 @@
-# 🚀 VendorIQ Pro - Quick Start Guide
+# Quick Start Guide - VendorSoluce RiskIQ Monetization
 
-Get your VendorIQ Pro React application up and running in 5 minutes!
+Get your monetized VendorSoluce RiskIQ app running in 10 minutes!
 
-## ⚡ Prerequisites
+## 🚀 Quick Setup (3 Steps)
 
-Before you begin, ensure you have:
-- **Node.js** (version 16 or higher) - [Download here](https://nodejs.org/)
-- **npm** (comes with Node.js) or **yarn**
-- **Git** (optional, for version control)
-- A modern web browser (Chrome, Firefox, Safari, or Edge)
-- A code editor (VS Code recommended)
-
-## 📦 Quick Installation
-
-### Method 1: Standard Setup (Recommended)
-
+### Step 1: Install Dependencies
 ```bash
-# Navigate to the project folder
-cd react-vendoriq
-
-# Install dependencies
 npm install
+```
 
-# Start development server
+### Step 2: Set Up Stripe (5 minutes)
+
+1. Get your Stripe keys from: https://dashboard.stripe.com/test/apikeys
+
+2. Create `.env` file:
+```bash
+cp .env.example .env
+```
+
+3. Add your Stripe secret key to `.env`:
+```env
+STRIPE_SECRET_KEY=sk_test_your_key_here
+```
+
+4. Run the setup script:
+```bash
+export STRIPE_SECRET_KEY=sk_test_your_key_here
+node setup-stripe-products.js
+```
+
+5. Copy the output to your `.env` file
+
+### Step 3: Run the App
+```bash
 npm run dev
 ```
 
-The app will automatically open at `http://localhost:3000` 🎉
+Visit: http://localhost:5173
 
-### Method 2: Using Yarn
+## 🎉 You're Done!
 
+The app now has:
+- ✅ Free, Pro ($149), and Enterprise ($449) tiers
+- ✅ Usage limits enforced (vendors & assessments)
+- ✅ Upgrade modals with Stripe payment links
+- ✅ PDF export for Pro+ users
+- ✅ 5 assessment templates (tiered access)
+- ✅ Settings page for tier management
+
+## 🧪 Test It Out
+
+### 1. Test Free Tier Limits
+- Add 5 vendors → See limit warning
+- Try to add 6th vendor → Upgrade modal appears!
+- Add 10 assessments → See limit warning
+- Try to add 11th → Upgrade modal!
+
+### 2. Test Upgrade Flow
+- Click "Upgrade" button
+- Opens Stripe payment link
+- Use test card: `4242 4242 4242 4242`
+- Complete test purchase
+
+### 3. Test Pro Features
+- Go to Settings → Switch to "Pro" tier
+- Now you can add unlimited vendors
+- PDF export buttons appear
+- All 5 templates available
+
+### 4. Test Enterprise Features
+- Switch to "Enterprise" tier in Settings
+- White-label settings appear
+- Everything is unlimited
+
+## 📝 What Was Implemented
+
+### ✅ Core Monetization Features
+
+1. **Three-Tier Licensing**
+   - Free: 5 vendors, 10 assessments
+   - Pro: Unlimited + PDF export
+   - Enterprise: Everything + white-label
+
+2. **Usage Enforcement**
+   - Limits checked before adding vendors/assessments
+   - Progress bars show usage
+   - Warnings at 80% capacity
+
+3. **Upgrade Prompts**
+   - Modal with tier comparison
+   - Feature matrix
+   - Direct Stripe payment links
+
+4. **Premium Features**
+   - PDF export (Pro+)
+   - 5 assessment templates (tiered)
+   - JSON export (Pro+)
+   - White-label (Enterprise)
+
+5. **UI Components**
+   - Tier badge in header
+   - Settings page
+   - Usage indicators
+   - Alert banners
+
+### 📦 Files Created (10 new)
+
+1. `utils/tierConfig.js` - Tier limits & config
+2. `utils/assessmentTemplates.js` - 5 templates
+3. `utils/pdfExport.js` - PDF generation
+4. `UpgradeModal.jsx` - Upgrade UI
+5. `TierBadge.jsx` - Current tier display
+6. `Settings.jsx` - Settings page
+7. `setup-stripe-products.js` - Stripe setup
+8. `.env.example` - Environment template
+9. `STRIPE_SETUP_GUIDE.md` - Detailed guide
+10. `monetization-styles.css` - Feature styles
+
+### 📝 Files Updated (9 existing)
+
+1. `package.json` - Added jspdf libraries
+2. `helpers.js` - Export functions with watermarks
+3. `AppContext.jsx` - License management
+4. `Vendors.jsx` - Limits & warnings
+5. `Assessments.jsx` - Templates & PDF export
+6. `Dashboard.jsx` - PDF export & tier badge
+7. `Header.jsx` - Tier badge & settings link
+8. `App.jsx` - New routes
+9. `index.css` - Import monetization styles
+
+## 💡 Tips
+
+### Switching Tiers (Demo Mode)
+Go to Settings → "Demo: Switch License Tier" → Click any tier
+
+### Stripe Test Cards
+- Success: `4242 4242 4242 4242`
+- Decline: `4000 0000 0000 0002`
+- 3D Secure: `4000 0027 6000 3184`
+
+### Customization
+- Edit tier limits in `utils/tierConfig.js`
+- Update Stripe links after running setup script
+- Customize colors in `index.css`
+
+## 🚢 Deploy to Production
+
+### 1. Build for Production
 ```bash
-cd react-vendoriq
-yarn install
-yarn dev
-```
-
-### Method 3: Using pnpm
-
-```bash
-cd react-vendoriq
-pnpm install
-pnpm dev
-```
-
-## 🎯 First Time Setup
-
-### Step 1: Verify Installation
-
-After running `npm run dev`, you should see:
-```
-  VITE v5.0.8  ready in 500 ms
-
-  ➜  Local:   http://localhost:3000/
-  ➜  Network: use --host to expose
-  ➜  press h to show help
-```
-
-### Step 2: Load Sample Data
-
-1. Open `http://localhost:3000` in your browser
-2. You'll see an empty dashboard
-3. Navigate to **Data Management** (last tab)
-4. Click **"Load 5 Sample Vendors"**
-5. Click **"Generate Sample Assessments"**
-6. Go back to **Dashboard** to see your data
-
-### Step 3: Explore Features
-
-**Dashboard Tab:**
-- View risk metrics
-- See distribution charts
-- Monitor trends
-
-**Vendors Tab:**
-- Add new vendors
-- Edit existing vendors
-- Search and filter
-- View risk scores
-
-**Assessments Tab:**
-- Create risk assessments
-- Track assessment history
-- View detailed scores
-
-**Analytics Tab:**
-- Review KPIs
-- Analyze risk distribution
-- Track vendor categories
-
-**Reports Tab:**
-- Export data as CSV
-- Generate reports
-- Export high-risk vendors
-
-**Data Tab:**
-- Create backups
-- Restore data
-- Load sample data
-- Clear all data
-
-## 🎨 Customization
-
-### Change Theme
-
-Click the **theme toggle button** (🌙/☀️) in the top-right corner to switch between light and dark themes.
-
-### Modify Colors
-
-Edit `src/index.css`:
-```css
-:root {
-  --growth-green: #33691E;  /* Your primary color */
-  --trust-mint: #C5E1A5;     /* Your accent color */
-  /* ... more variables */
-}
-```
-
-### Change Port
-
-Edit `vite.config.js`:
-```js
-export default defineConfig({
-  server: {
-    port: 3001, // Change to your preferred port
-    open: true
-  }
-})
-```
-
-## 🔧 Common Commands
-
-```bash
-# Start development server
-npm run dev
-
-# Build for production
 npm run build
-
-# Preview production build
-npm run preview
-
-# Run linter
-npm run lint
-
-# Install new package
-npm install package-name
-
-# Update dependencies
-npm update
 ```
 
-## 📱 Testing on Mobile
-
-### Same Network
-
-1. Find your IP address:
-   ```bash
-   # Windows
-   ipconfig
-   
-   # Mac/Linux
-   ifconfig
-   ```
-
-2. Start server with host flag:
-   ```bash
-   npm run dev -- --host
-   ```
-
-3. Access from mobile browser:
-   ```
-   http://YOUR_IP_ADDRESS:3000
-   ```
-
-### Using ngrok (External Access)
-
+### 2. Deploy to Vercel (Recommended)
 ```bash
-# Install ngrok
-npm install -g ngrok
-
-# Start your app
-npm run dev
-
-# In another terminal
-ngrok http 3000
-```
-
-## 🐛 Troubleshooting
-
-### Issue: Port Already in Use
-
-**Solution:**
-```bash
-# Kill process on port 3000 (Mac/Linux)
-lsof -ti:3000 | xargs kill -9
-
-# Windows
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
-```
-
-### Issue: Module Not Found
-
-**Solution:**
-```bash
-# Delete node_modules and reinstall
-rm -rf node_modules
-npm install
-```
-
-### Issue: Build Fails
-
-**Solution:**
-```bash
-# Clear cache
-npm cache clean --force
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### Issue: Charts Not Displaying
-
-**Solution:**
-- Ensure Chart.js is installed: `npm install chart.js react-chartjs-2`
-- Clear browser cache
-- Check browser console for errors
-
-### Issue: LocalStorage Full
-
-**Solution:**
-- Go to Data Management
-- Create a backup first
-- Click "Clear All Data"
-
-## 🔐 Data Management
-
-### Backup Your Data
-
-1. Navigate to **Data Management**
-2. Click **"Create Backup"**
-3. File downloads as `vendoriq-backup-YYYY-MM-DD.json`
-4. Store safely
-
-### Restore from Backup
-
-1. Navigate to **Data Management**
-2. Click **"Restore from Backup"**
-3. Select your backup file
-4. Confirm restoration
-
-### Export to CSV
-
-1. Navigate to **Reports**
-2. Choose export option:
-   - All Vendors
-   - High Risk Vendors
-   - Assessments
-
-## 🚢 Deployment
-
-### Quick Deploy to Vercel
-
-```bash
-# Install Vercel CLI
 npm install -g vercel
-
-# Deploy
-cd react-vendoriq
 vercel
 ```
 
-### Quick Deploy to Netlify
+Add environment variables in Vercel:
+- Settings → Environment Variables
+- Add all `VITE_*` variables from `.env`
 
+### 3. Or Deploy to Netlify
 ```bash
-# Install Netlify CLI
 npm install -g netlify-cli
-
-# Deploy
-cd react-vendoriq
 netlify deploy --prod
 ```
 
-See `DEPLOYMENT.md` for detailed deployment instructions.
+Add environment variables in Netlify:
+- Site Settings → Environment Variables
 
-## 📚 Learn More
+### 4. Switch to Live Stripe Keys
+1. Get live keys from Stripe Dashboard
+2. Run setup script with live key
+3. Update production environment variables
 
-### Key Technologies
+## 📊 Revenue Model
 
-- **React 18** - UI framework
-- **Vite** - Build tool
-- **React Router** - Routing
-- **Chart.js** - Charts
-- **Lucide React** - Icons
-- **Framer Motion** - Animations
+### Pricing Tiers
+- **Free**: Lead generation, viral growth
+- **Pro**: $149 one-time (target: SMB, developers)
+- **Enterprise**: $449 one-time (target: enterprises)
 
-### Documentation
+### Add-ons (Optional)
+- Additional Users: $10/month
+- Additional Vendors: $5/month
+- SBOM Scans: $40 per 10-pack
+- Consulting: $200/month
 
-- [React Documentation](https://react.dev/)
-- [Vite Documentation](https://vitejs.dev/)
-- [Chart.js Documentation](https://www.chartjs.org/)
+### Revenue Projection
+- 100 Pro customers = $14,900
+- 20 Enterprise customers = $8,980
+- Total: ~$24K from 120 customers
 
-### Project Structure
+## 🔗 Important Links
 
-```
-react-vendoriq/
-├── public/              # Static files
-├── src/
-│   ├── components/      # Reusable components
-│   │   ├── Layout/     # Header, Navigation
-│   │   └── Toast/      # Notifications
-│   ├── pages/          # Page components
-│   │   ├── Dashboard.jsx
-│   │   ├── Vendors.jsx
-│   │   ├── Assessments.jsx
-│   │   ├── Analytics.jsx
-│   │   ├── Reports.jsx
-│   │   └── DataManagement.jsx
-│   ├── context/        # State management
-│   │   └── AppContext.jsx
-│   ├── utils/          # Helper functions
-│   │   └── helpers.js
-│   ├── App.jsx         # Main app
-│   ├── main.jsx        # Entry point
-│   └── index.css       # Global styles
-├── index.html
-├── package.json
-├── vite.config.js
-└── README.md
+- **Stripe Dashboard**: https://dashboard.stripe.com
+- **Test Payment Link**: (Check console output after setup)
+- **Documentation**: See `STRIPE_SETUP_GUIDE.md`
+
+## ❓ Need Help?
+
+### Common Issues
+
+**"Module not found: stripe"**
+```bash
+npm install stripe
 ```
 
-## 💡 Tips for Success
+**"Invalid API key"**
+- Check your `.env` file
+- Verify key starts with `sk_test_`
 
-1. **Regular Backups** - Create backups before major changes
-2. **Use Version Control** - Initialize git: `git init`
-3. **Keep Dependencies Updated** - Run `npm update` monthly
-4. **Monitor Console** - Check browser console for errors
-5. **Test Before Deploy** - Always run `npm run build` and `npm run preview`
+**Payment link not working**
+- Run setup script first
+- Check environment variables loaded
 
-## 🎓 Next Steps
+**Limits not enforcing**
+- Clear localStorage: `localStorage.clear()`
+- Refresh page
 
-After setup, try:
+### Get Support
+- Email: support@vendorsoluce.com
+- Docs: Read `STRIPE_SETUP_GUIDE.md`
+- Stripe Support: https://support.stripe.com
 
-1. **Customize Branding**
-   - Update colors in `src/index.css`
-   - Replace logo in Header component
-   - Modify theme to match your brand
+## 🎯 Next Steps
 
-2. **Add Real Data**
-   - Replace sample data with real vendors
-   - Create actual risk assessments
-   - Configure risk scoring for your needs
-
-3. **Deploy to Production**
-   - Follow `DEPLOYMENT.md` guide
-   - Set up custom domain
-   - Configure SSL certificate
-
-4. **Enhance Features**
-   - Add more chart types
-   - Implement advanced filtering
-   - Create custom reports
-   - Add email notifications
-
-## 📞 Getting Help
-
-**Documentation:**
-- `README.md` - Full documentation
-- `DEPLOYMENT.md` - Deployment guide
-- `QUICK_START.md` - This guide
-
-**Common Issues:**
-- Check troubleshooting section above
-- Search GitHub issues
-- Review browser console logs
-
-**Community:**
-- Open GitHub issue
-- Check Stack Overflow
-- Contact support team
-
-## ✅ Success Checklist
-
-- [ ] Node.js 16+ installed
-- [ ] Dependencies installed successfully
-- [ ] Development server running
-- [ ] Can access http://localhost:3000
-- [ ] Sample data loaded
-- [ ] All tabs accessible
-- [ ] Can add/edit vendors
-- [ ] Can create assessments
-- [ ] Charts displaying correctly
-- [ ] Theme toggle works
-- [ ] Data persists after refresh
-- [ ] Can export data
-- [ ] Can create backup
-- [ ] Ready to customize!
-
-## 🎉 You're All Set!
-
-Congratulations! Your VendorIQ Pro application is now running. Start managing your vendor risks like a pro!
-
-Need help? Check out:
-- Full documentation in `README.md`
-- Deployment guide in `DEPLOYMENT.md`
-- Code comments in source files
+1. ✅ Complete Stripe setup
+2. ✅ Test all features locally
+3. ✅ Customize branding
+4. ✅ Deploy to production
+5. ✅ Set up webhooks (optional)
+6. ✅ Launch & market!
 
 ---
 
-**Happy Risk Management! 🛡️**
-
-**Last Updated:** November 2025
-**Version:** 2.0.0
+**Ready to monetize?** Follow the 3 steps above and you'll be accepting payments in minutes! 🚀

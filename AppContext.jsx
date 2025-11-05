@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { TIER_NAMES, getTierConfig, canAddVendor, canAddAssessment } from './utils/tierConfig';
 
 const AppContext = createContext();
 
@@ -15,16 +16,20 @@ export const AppProvider = ({ children }) => {
   const [assessments, setAssessments] = useState([]);
   const [theme, setTheme] = useState('light');
   const [toast, setToast] = useState(null);
+  const [licenseTier, setLicenseTierState] = useState(TIER_NAMES.FREE);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Load data from localStorage on mount
   useEffect(() => {
     const savedVendors = localStorage.getItem('vendors');
     const savedAssessments = localStorage.getItem('assessments');
     const savedTheme = localStorage.getItem('theme');
+    const savedLicenseTier = localStorage.getItem('licenseTier');
 
     if (savedVendors) setVendors(JSON.parse(savedVendors));
     if (savedAssessments) setAssessments(JSON.parse(savedAssessments));
     if (savedTheme) setTheme(savedTheme);
+    if (savedLicenseTier) setLicenseTierState(savedLicenseTier);
   }, []);
 
   // Apply theme
@@ -51,7 +56,50 @@ export const AppProvider = ({ children }) => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
+  // License tier management
+  const setLicenseTier = (tier) => {
+    setLicenseTierState(tier);
+    localStorage.setItem('licenseTier', tier);
+    showToast('Updated', `License upgraded to ${getTierConfig(tier).displayName}`, 'success');
+  };
+
+  const getLicenseTier = () => {
+    return licenseTier;
+  };
+
+  const getTierLimits = () => {
+    return getTierConfig(licenseTier).limits;
+  };
+
+  const getTierFeatures = () => {
+    return getTierConfig(licenseTier).features;
+  };
+
+  const canAddNewVendor = () => {
+    return canAddVendor(licenseTier, vendors.length);
+  };
+
+  const canAddNewAssessment = () => {
+    return canAddAssessment(licenseTier, assessments.length);
+  };
+
+  const triggerUpgradeModal = (reason) => {
+    setShowUpgradeModal(true);
+    showToast('Limit Reached', reason, 'warning');
+  };
+
+  const closeUpgradeModal = () => {
+    setShowUpgradeModal(false);
+  };
+
   const addVendor = (vendor) => {
+    // Check tier limits
+    if (!canAddNewVendor()) {
+      const limits = getTierLimits();
+      triggerUpgradeModal(`You've reached your vendor limit (${limits.maxVendors}). Upgrade to add more vendors.`);
+      return false;
+    }
+
     const newVendor = {
       ...vendor,
       id: `vendor-${Date.now()}`,
@@ -61,6 +109,7 @@ export const AppProvider = ({ children }) => {
     };
     setVendors(prev => [...prev, newVendor]);
     showToast('Success', 'Vendor added successfully', 'success');
+    return true;
   };
 
   const updateVendor = (vendorId, updates) => {
@@ -79,6 +128,13 @@ export const AppProvider = ({ children }) => {
   };
 
   const addAssessment = (assessment) => {
+    // Check tier limits
+    if (!canAddNewAssessment()) {
+      const limits = getTierLimits();
+      triggerUpgradeModal(`You've reached your assessment limit (${limits.maxAssessments}). Upgrade to add more assessments.`);
+      return false;
+    }
+
     const newAssessment = {
       ...assessment,
       id: `assessment-${Date.now()}`,
@@ -92,6 +148,7 @@ export const AppProvider = ({ children }) => {
     });
     
     showToast('Success', 'Assessment saved successfully', 'success');
+    return true;
   };
 
   const deleteAssessment = (assessmentId) => {
@@ -181,6 +238,8 @@ export const AppProvider = ({ children }) => {
     assessments,
     theme,
     toast,
+    licenseTier,
+    showUpgradeModal,
     toggleTheme,
     addVendor,
     updateVendor,
@@ -190,7 +249,16 @@ export const AppProvider = ({ children }) => {
     showToast,
     generateSampleVendors,
     clearAllData,
-    calculateRiskScore
+    calculateRiskScore,
+    // License tier functions
+    setLicenseTier,
+    getLicenseTier,
+    getTierLimits,
+    getTierFeatures,
+    canAddNewVendor,
+    canAddNewAssessment,
+    triggerUpgradeModal,
+    closeUpgradeModal
   };
 
   return (

@@ -1,0 +1,189 @@
+.tier-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.tier-badge-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tier-badge-name {
+  white-space: nowrap;
+}
+
+.tier-badge-upgrade {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  margin-left: 0.25rem;
+}
+
+/* Tier-specific styling */
+.tier-badge-free {
+  background: #e0e0e0;
+  color: #424242;
+  border: 2px solid #bdbdbd;
+}
+
+.tier-badge-free:hover {
+  background: #bdbdbd;
+  border-color: var(--growth-green);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tier-badge-pro {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: 2px solid #667eea;
+}
+
+.tier-badge-pro:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.tier-badge-enterprise {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: 2px solid #f093fb;
+}
+
+.tier-badge-enterprise:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4);
+}
+
+/* Tooltip */
+.tier-badge-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  min-width: 250px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tier-badge-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  width: 12px;
+  height: 12px;
+  background: var(--card-bg);
+  border-left: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+  transform: rotate(45deg);
+}
+
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.tooltip-header strong {
+  font-size: 0.875rem;
+}
+
+.tooltip-header span {
+  font-size: 1rem;
+  color: var(--growth-green);
+  font-weight: 700;
+}
+
+.tooltip-usage {
+  margin-bottom: 0.75rem;
+}
+
+.usage-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.usage-warning {
+  color: var(--warning-amber);
+  font-weight: 600;
+}
+
+.usage-bar {
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.usage-bar-fill {
+  height: 100%;
+  background: var(--success-green);
+  border-radius: 3px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.usage-bar-warning {
+  background: var(--warning-amber);
+}
+
+.tooltip-action {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tier-badge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .tier-badge-tooltip {
+    min-width: 200px;
+    right: -10px;
+  }
+
+  .tier-badge-upgrade {
+    display: none;
+  }
+}
+

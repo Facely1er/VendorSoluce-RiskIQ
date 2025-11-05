@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { Plus, X, FileText } from 'lucide-react';
+import { Plus, X, FileText, Download, AlertCircle, Trash2 } from 'lucide-react';
 import { useApp } from './AppContext';
 import { getRiskLevel, getRiskBadgeClass, formatDate } from './helpers';
+import { getTemplatesByTier, getTemplateIcon, getTemplateCategories, initializeAssessmentScores } from './utils/assessmentTemplates';
+import { exportAssessmentToPDF } from './utils/pdfExport';
+import { canExportPDF, getUsagePercentage, isApproachingLimit, isAtLimit } from './utils/tierConfig';
 import './Assessments.css';
 
 const Assessments = () => {
-  const { vendors, assessments, addAssessment, deleteAssessment } = useApp();
+  const { vendors, assessments, addAssessment, deleteAssessment, licenseTier, getTierLimits, canAddNewAssessment, triggerUpgradeModal } = useApp();
   const [showModal, setShowModal] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState('nist_basic');
   const [formData, setFormData] = useState({
     vendorId: '',
     assessmentType: 'initial',
+    templateId: 'nist_basic',
     securityScore: 70,
     complianceScore: 70,
     financialScore: 70,
@@ -17,14 +22,29 @@ const Assessments = () => {
     findings: ''
   });
 
+  const tierLimits = getTierLimits();
+  const availableTemplates = getTemplatesByTier(licenseTier);
+  const usagePercent = getUsagePercentage(licenseTier, assessments.length, 'assessments');
+  const approaching = isApproachingLimit(licenseTier, assessments.length, 'assessments');
+  const atLimit = isAtLimit(licenseTier, assessments.length, 'assessments');
+
   const handleOpenModal = () => {
     if (vendors.length === 0) {
       alert('Please add vendors before creating assessments');
       return;
     }
+
+    // Check if user can add new assessment
+    if (!canAddNewAssessment()) {
+      triggerUpgradeModal(`You've reached your assessment limit (${tierLimits.maxAssessments}). Upgrade to add more assessments.`);
+      return;
+    }
+
+    setSelectedTemplate('nist_basic');
     setFormData({
       vendorId: '',
       assessmentType: 'initial',
+      templateId: 'nist_basic',
       securityScore: 70,
       complianceScore: 70,
       financialScore: 70,
@@ -32,6 +52,22 @@ const Assessments = () => {
       findings: ''
     });
     setShowModal(true);
+  };
+
+  const handleTemplateChange = (templateId) => {
+    setSelectedTemplate(templateId);
+    setFormData(prev => ({
+      ...prev,
+      templateId
+    }));
+  };
+
+  const handleExportPDF = (assessment, vendor) => {
+    if (!canExportPDF(licenseTier)) {
+      triggerUpgradeModal('PDF export is available in Pro and Enterprise plans. Upgrade now!');
+      return;
+    }
+    exportAssessmentToPDF(assessment, vendor, licenseTier);
   };
 
   const handleCloseModal = () => {
@@ -81,12 +117,54 @@ const Assessments = () => {
         <div>
           <h2>Risk Assessments</h2>
           <p>Conduct and track vendor risk assessments</p>
+          {tierLimits.maxAssessments !== Infinity && (
+            <div className="usage-indicator">
+              <span className={approaching ? 'usage-warning' : ''}>
+                {assessments.length} / {tierLimits.maxAssessments} assessments
+              </span>
+              {usagePercent > 0 && (
+                <div className="usage-bar-small">
+                  <div 
+                    className={`usage-bar-fill ${approaching ? 'usage-bar-warning' : ''}`}
+                    style={{ width: `${usagePercent}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
-        <button className="btn btn-primary" onClick={handleOpenModal}>
+        <button 
+          className="btn btn-primary" 
+          onClick={handleOpenModal}
+          disabled={atLimit}
+          title={atLimit ? `Assessment limit reached (${tierLimits.maxAssessments})` : 'Create new assessment'}
+        >
           <Plus size={20} />
-          New Assessment
+          {atLimit ? 'Limit Reached' : 'New Assessment'}
         </button>
       </div>
+
+      {/* Approaching Limit Warning */}
+      {approaching && !atLimit && (
+        <div className="alert alert-warning">
+          <AlertCircle size={20} />
+          <div>
+            <strong>Approaching Limit</strong>
+            <p>You're using {assessments.length} of {tierLimits.maxAssessments} assessments. <span className="link" onClick={() => triggerUpgradeModal('Upgrade for unlimited assessments')}>Upgrade now</span> for unlimited assessments.</p>
+          </div>
+        </div>
+      )}
+
+      {/* At Limit Warning */}
+      {atLimit && (
+        <div className="alert alert-danger">
+          <AlertCircle size={20} />
+          <div>
+            <strong>Assessment Limit Reached</strong>
+            <p>You've reached your maximum of {tierLimits.maxAssessments} assessments. <span className="link" onClick={() => triggerUpgradeModal('Upgrade for unlimited assessments')}>Upgrade to Pro</span> to add more assessments.</p>
+          </div>
+        </div>
+      )}
 
       {assessments.length === 0 ? (
         <div className="empty-state">
@@ -193,12 +271,23 @@ const Assessments = () => {
                   </div>
                 )}
 
-                <button 
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDelete(assessment.id, assessment.vendorName)}
-                >
-                  Delete Assessment
-                </button>
+                <div className="assessment-actions">
+                  <button 
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleExportPDF(assessment, vendors.find(v => v.id === assessment.vendorId))}
+                    title={canExportPDF(licenseTier) ? 'Export to PDF' : 'Upgrade to Pro for PDF export'}
+                  >
+                    <Download size={16} />
+                    {canExportPDF(licenseTier) ? 'Export PDF' : 'PDF (Pro)'}
+                  </button>
+                  <button 
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(assessment.id, assessment.vendorName)}
+                  >
+                    <Trash2 size={16} />
+                    Delete
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -231,6 +320,25 @@ const Assessments = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="form-group">
+                <label>Assessment Template *</label>
+                <select
+                  value={selectedTemplate}
+                  onChange={(e) => handleTemplateChange(e.target.value)}
+                  required
+                >
+                  {availableTemplates.map(template => (
+                    <option key={template.id} value={template.id}>
+                      {getTemplateIcon(template.id)} {template.name}
+                    </option>
+                  ))}
+                </select>
+                <small className="form-hint">
+                  {availableTemplates.length} template(s) available in your tier
+                  {licenseTier === 'free' && <span className="link" onClick={() => triggerUpgradeModal('Upgrade to access all 5 templates')}> · Upgrade for more</span>}
+                </small>
               </div>
 
               <div className="form-grid">
