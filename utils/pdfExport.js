@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import { formatCurrency, formatDate, getRiskLevel } from './helpers';
+import { formatCurrency, formatDate, getRiskLevel } from '../helpers';
 import { hasWatermark, canWhiteLabel } from './tierConfig';
 
 // PDF styling constants
