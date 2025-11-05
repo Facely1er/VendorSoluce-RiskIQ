@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { TIER_NAMES, getTierConfig, canAddVendor, canAddAssessment } from './utils/tierConfig';
+import { checkLicenseStatus } from './utils/licenseValidator';
 
 const AppContext = createContext();
 
@@ -21,15 +22,51 @@ export const AppProvider = ({ children }) => {
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedVendors = localStorage.getItem('vendors');
-    const savedAssessments = localStorage.getItem('assessments');
-    const savedTheme = localStorage.getItem('theme');
-    const savedLicenseTier = localStorage.getItem('licenseTier');
+    const loadInitialData = async () => {
+      const savedVendors = localStorage.getItem('vendors');
+      const savedAssessments = localStorage.getItem('assessments');
+      const savedTheme = localStorage.getItem('theme');
 
-    if (savedVendors) setVendors(JSON.parse(savedVendors));
-    if (savedAssessments) setAssessments(JSON.parse(savedAssessments));
-    if (savedTheme) setTheme(savedTheme);
-    if (savedLicenseTier) setLicenseTierState(savedLicenseTier);
+      if (savedVendors) setVendors(JSON.parse(savedVendors));
+      if (savedAssessments) setAssessments(JSON.parse(savedAssessments));
+      if (savedTheme) setTheme(savedTheme);
+
+      // Check license status on app startup
+      try {
+        const licenseStatus = await checkLicenseStatus();
+        
+        if (licenseStatus.licensed) {
+          setLicenseTierState(licenseStatus.tier);
+          console.log('✅ License validated:', licenseStatus.message);
+          
+          // Show notification for expired license
+          if (licenseStatus.expired) {
+            setTimeout(() => {
+              showToast('License Expired', licenseStatus.message, 'warning');
+            }, 2000);
+          }
+        } else {
+          // No valid license, use Free tier
+          setLicenseTierState(TIER_NAMES.FREE);
+          
+          // Only show message if there was a license issue (not first time use)
+          const savedLicenseTier = localStorage.getItem('licenseTier');
+          if (savedLicenseTier && savedLicenseTier !== TIER_NAMES.FREE) {
+            console.log('⚠️ License validation failed, reverting to Free tier');
+            setTimeout(() => {
+              showToast('Notice', licenseStatus.message || 'Using Free tier', 'info');
+            }, 2000);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking license status:', error);
+        // Fallback to saved tier or Free
+        const savedLicenseTier = localStorage.getItem('licenseTier');
+        setLicenseTierState(savedLicenseTier || TIER_NAMES.FREE);
+      }
+    };
+
+    loadInitialData();
   }, []);
 
   // Apply theme

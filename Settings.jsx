@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Crown, Zap, Info, Check, ExternalLink, Settings as SettingsIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Crown, Zap, Info, Check, ExternalLink, Settings as SettingsIcon, Key, ShieldCheck, AlertCircle } from 'lucide-react';
 import { useApp } from './AppContext';
 import { TIER_NAMES, TIER_CONFIG, getTierConfig } from './utils/tierConfig';
+import { activateLicense, deactivateLicense, getStoredLicense, maskLicenseKey, generateDemoLicense } from './utils/licenseValidator';
 import './Settings.css';
 
 const Settings = () => {
-  const { licenseTier, setLicenseTier, vendors, assessments, triggerUpgradeModal } = useApp();
+  const { licenseTier, setLicenseTier, vendors, assessments, triggerUpgradeModal, showToast } = useApp();
   const [whiteLabelSettings, setWhiteLabelSettings] = useState({
     companyName: 'VendorSoluce',
     logoUrl: '',
@@ -13,7 +14,19 @@ const Settings = () => {
     showBranding: true
   });
 
+  // License activation state
+  const [licenseKey, setLicenseKey] = useState('');
+  const [isActivating, setIsActivating] = useState(false);
+  const [storedLicense, setStoredLicense] = useState(null);
+  const [showLicenseInput, setShowLicenseInput] = useState(false);
+
   const currentTier = getTierConfig(licenseTier);
+
+  // Load stored license on mount
+  useEffect(() => {
+    const license = getStoredLicense();
+    setStoredLicense(license);
+  }, [licenseTier]);
 
   const handleTierChange = (newTier) => {
     if (newTier !== licenseTier) {
@@ -30,6 +43,62 @@ const Settings = () => {
     } else {
       triggerUpgradeModal('Contact sales for custom pricing');
     }
+  };
+
+  // License activation handlers
+  const handleActivateLicense = async () => {
+    if (!licenseKey.trim()) {
+      showToast('Error', 'Please enter a license key', 'error');
+      return;
+    }
+
+    setIsActivating(true);
+
+    try {
+      const result = await activateLicense(licenseKey.trim(), true);
+      
+      if (result.success) {
+        setLicenseTier(result.tier);
+        setStoredLicense(getStoredLicense());
+        setLicenseKey('');
+        setShowLicenseInput(false);
+        showToast('Success', result.message, 'success');
+        
+        if (result.warning) {
+          setTimeout(() => {
+            showToast('Notice', result.warning, 'info');
+          }, 2000);
+        }
+      } else {
+        showToast('Activation Failed', result.error, 'error');
+      }
+    } catch (error) {
+      showToast('Error', 'Failed to activate license. Please try again.', 'error');
+    } finally {
+      setIsActivating(false);
+    }
+  };
+
+  const handleDeactivateLicense = () => {
+    if (!window.confirm('Are you sure you want to deactivate your license? You will revert to the Free tier.')) {
+      return;
+    }
+
+    const result = deactivateLicense();
+    
+    if (result.success) {
+      setLicenseTier(TIER_NAMES.FREE);
+      setStoredLicense(null);
+      showToast('Success', result.message, 'success');
+    } else {
+      showToast('Error', result.message, 'error');
+    }
+  };
+
+  const handleGenerateDemoKey = () => {
+    const demoKey = generateDemoLicense('pro');
+    setLicenseKey(demoKey);
+    showToast('Demo Key Generated', 'This is for testing only. In production, purchase a license from our website.', 'info');
   };
 
   return (
@@ -197,6 +266,131 @@ const Settings = () => {
           </div>
         </div>
       )}
+
+      {/* License Activation Section */}
+      <div className="settings-section">
+        <h3><Key size={20} /> License Activation</h3>
+        <p className="section-description">
+          Activate your purchased license to unlock Pro or Enterprise features
+        </p>
+
+        {storedLicense ? (
+          // License is activated
+          <div className="license-status-card activated">
+            <div className="license-header">
+              <ShieldCheck size={32} color="#10b981" />
+              <div>
+                <h4>License Active</h4>
+                <p>Your {storedLicense.tier.toUpperCase()} license is activated</p>
+              </div>
+            </div>
+
+            <div className="license-details">
+              <div className="license-detail-row">
+                <span className="label">License Key:</span>
+                <span className="value mono">{maskLicenseKey(storedLicense.key)}</span>
+              </div>
+              {storedLicense.data && storedLicense.data.email && (
+                <div className="license-detail-row">
+                  <span className="label">Registered to:</span>
+                  <span className="value">{storedLicense.data.email}</span>
+                </div>
+              )}
+              {storedLicense.data && storedLicense.data.validatedAt && (
+                <div className="license-detail-row">
+                  <span className="label">Activated:</span>
+                  <span className="value">{new Date(storedLicense.data.validatedAt).toLocaleDateString()}</span>
+                </div>
+              )}
+              {storedLicense.data && storedLicense.data.online === false && (
+                <div className="license-warning">
+                  <AlertCircle size={16} />
+                  <span>License validated offline. Some features may require online validation.</span>
+                </div>
+              )}
+            </div>
+
+            <button 
+              className="btn btn-danger"
+              onClick={handleDeactivateLicense}
+            >
+              Deactivate License
+            </button>
+          </div>
+        ) : (
+          // No license activated
+          <div className="license-status-card inactive">
+            <div className="license-header">
+              <Info size={32} color="#6b7280" />
+              <div>
+                <h4>No Active License</h4>
+                <p>You're currently using the Free tier</p>
+              </div>
+            </div>
+
+            {!showLicenseInput ? (
+              <div className="license-actions">
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => setShowLicenseInput(true)}
+                >
+                  <Key size={18} />
+                  Activate License
+                </button>
+                <p className="help-text">
+                  Don't have a license? <a href="https://vendorsoluce.com/pricing" target="_blank" rel="noopener noreferrer">Purchase one here</a>
+                </p>
+              </div>
+            ) : (
+              <div className="license-input-section">
+                <div className="form-group">
+                  <label>Enter License Key</label>
+                  <input
+                    type="text"
+                    value={licenseKey}
+                    onChange={(e) => setLicenseKey(e.target.value.toUpperCase())}
+                    placeholder="PRO-XXXX-XXXX-XXXX-XXXX"
+                    className="license-input mono"
+                    disabled={isActivating}
+                  />
+                  <small className="help-text">
+                    Format: TIER-XXXX-XXXX-XXXX-XXXX (e.g., PRO-A3F5-8D2C-1E9B-4F7A)
+                  </small>
+                </div>
+
+                <div className="license-actions">
+                  <button 
+                    className="btn btn-primary"
+                    onClick={handleActivateLicense}
+                    disabled={isActivating || !licenseKey.trim()}
+                  >
+                    {isActivating ? 'Activating...' : 'Activate'}
+                  </button>
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setShowLicenseInput(false);
+                      setLicenseKey('');
+                    }}
+                    disabled={isActivating}
+                  >
+                    Cancel
+                  </button>
+                  {process.env.NODE_ENV === 'development' && (
+                    <button 
+                      className="btn btn-secondary"
+                      onClick={handleGenerateDemoKey}
+                      disabled={isActivating}
+                    >
+                      Generate Demo Key
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* White-Label Settings (Enterprise Only) */}
       {currentTier.features.canWhiteLabel && (

@@ -3,10 +3,20 @@
   "version": "2.0.0",
   "description": "Enterprise Vendor Risk Management Platform",
   "private": true,
+  "main": "electron-main.js",
+  "homepage": "./",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:web": "vite build",
+    "build:electron": "vite build && electron-builder",
     "preview": "vite preview",
+    "electron": "electron .",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:win": "npm run build && electron-builder --win",
+    "electron:build:mac": "npm run build && electron-builder --mac",
+    "electron:build:linux": "npm run build && electron-builder --linux",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
@@ -29,6 +39,45 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5"
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.vendorsoluce.riskiq",
+    "productName": "VendorSoluce RiskIQ",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.js",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "public/icon.ico",
+      "artifactName": "VendorSoluce-RiskIQ-${version}-Setup.${ext}"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "public/icon.icns",
+      "category": "public.app-category.business",
+      "artifactName": "VendorSoluce-RiskIQ-${version}.${ext}"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "public/icon.png",
+      "category": "Office",
+      "artifactName": "VendorSoluce-RiskIQ-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }
