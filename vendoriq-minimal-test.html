@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendorIQ Pro - Minimal Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2332 50%, #1e3a2f 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        .status { padding: 15px; background: #1e2936; border-radius: 8px; margin: 10px 0; }
+        .success { border-left: 4px solid #4ade80; }
+        .error { border-left: 4px solid #ef4444; }
+        .btn {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: #0a1628;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VendorIQ Pro</h1>
+        <p style="margin-bottom: 30px; font-size: 1.1rem; color: #a0a8bc;">Minimal Test Version</p>
+        
+        <div class="status success">
+            <strong>✅ Page Loaded Successfully</strong><br>
+            Your browser can display HTML/CSS/JavaScript correctly.
+        </div>
+        
+        <div id="jsTest" class="status error">
+            <strong>⏳ Testing JavaScript...</strong>
+        </div>
+        
+        <div id="storageTest" class="status error">
+            <strong>⏳ Testing LocalStorage...</strong>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button class="btn" onclick="testClick()">Test Button Click</button>
+            <button class="btn" onclick="window.location.href='vendoriq-pro-fixed.html'">Load Full Version</button>
+        </div>
+        
+        <div id="clickTest" style="margin-top: 20px;"></div>
+    </div>
+    
+    <script>
+        // Test JavaScript
+        setTimeout(() => {
+            document.getElementById('jsTest').className = 'status success';
+            document.getElementById('jsTest').innerHTML = '<strong>✅ JavaScript Working</strong><br>Scripts are executing properly.';
+        }, 100);
+        
+        // Test LocalStorage
+        setTimeout(() => {
+            try {
+                localStorage.setItem('test', 'working');
+                const test = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (test === 'working') {
+                    document.getElementById('storageTest').className = 'status success';
+                    document.getElementById('storageTest').innerHTML = '<strong>✅ LocalStorage Working</strong><br>Data persistence is available.';
+                } else {
+                    throw new Error('Read/write failed');
+                }
+            } catch (error) {
+                document.getElementById('storageTest').className = 'status error';
+                document.getElementById('storageTest').innerHTML = '<strong>❌ LocalStorage Failed</strong><br>' + error.message;
+            }
+        }, 200);
+        
+        function testClick() {
+            document.getElementById('clickTest').innerHTML = '<div class="status success"><strong>✅ Click Event Working!</strong><br>Button clicks are being handled correctly.</div>';
+        }
+        
+        console.log('✅ Minimal test version loaded successfully');
+    </script>
+</body>
+</html>

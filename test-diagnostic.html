@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendorIQ Diagnostic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #0a1628;
+            color: white;
+        }
+        .test { background: #1e2936; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        .pass { border-left: 4px solid #4ade80; }
+        .fail { border-left: 4px solid #ef4444; }
+        pre { background: #0a0a0a; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>VendorIQ Pro Diagnostic</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function test(name, fn) {
+            try {
+                fn();
+                results.innerHTML += `<div class="test pass">✅ ${name}</div>`;
+                return true;
+            } catch (error) {
+                results.innerHTML += `<div class="test fail">❌ ${name}<br><pre>${error.message}</pre></div>`;
+                return false;
+            }
+        }
+        
+        // Run tests
+        test('DOM Ready', () => {
+            if (!document.body) throw new Error('Body not found');
+        });
+        
+        test('LocalStorage Available', () => {
+            localStorage.setItem('test', '1');
+            const val = localStorage.getItem('test');
+            if (val !== '1') throw new Error('LocalStorage not working');
+            localStorage.removeItem('test');
+        });
+        
+        test('Chart.js Loading', () => {
+            // This will fail since we haven't loaded Chart.js, but that's expected
+            if (typeof Chart === 'undefined') {
+                throw new Error('Chart.js not loaded - CDN may be blocked or slow');
+            }
+        });
+        
+        // Show next steps
+        results.innerHTML += `
+            <div class="test pass">
+                <h3>Next Steps:</h3>
+                <ol>
+                    <li>If Chart.js test failed, the CDN might be blocked</li>
+                    <li>Check browser console for errors</li>
+                    <li>Try opening the original file and checking console</li>
+                </ol>
+            </div>
+        `;
+    </script>
+</body>
+</html>

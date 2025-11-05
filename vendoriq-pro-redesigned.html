@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendorIQ Pro - Enterprise Vendor Risk Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* VendorSoluce Design System */
+        :root {
+            --growth-green: #33691E;
+            --trust-mint: #C5E1A5;
+            --trust-mint-light: #E8F5E9;
+            --trust-mint-dark: #689F38;
+            --success-green: #2E7D32;
+            --warning-amber: #F57C00;
+            --danger-red: #C62828;
+            --info-blue: #0277BD;
+            --neutral-gray: #616161;
+            --light-gray: #F5F5F5;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border-color: #E0E0E0;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --growth-green: #4ade80;
+            --trust-mint: #86efac;
+            --trust-mint-light: #166534;
+            --trust-mint-dark: #22c55e;
+            --success-green: #10b981;
+            --warning-amber: #fbbf24;
+            --danger-red: #ef4444;
+            --info-blue: #3b82f6;
+            --neutral-gray: #9ca3af;
+            --light-gray: #1e2936;
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0a8bc;
+            --border-color: #2d3748;
+            --bg-primary: #0a1628;
+            --bg-secondary: #1a2332;
+            --bg-card: #1e2936;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0a1628 0%, #1a2332 50%, #1e3a2f 100%);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .app-header {
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom-color: var(--growth-green);
+        }
+
+        [data-theme="dark"] .content-panel,
+        [data-theme="dark"] .metric-card,
+        [data-theme="dark"] .vendor-card,
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--text-primary);
+            background: var(--light-gray);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .vendoriq-app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            background: white;
+            border-bottom: 3px solid var(--growth-green);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            font-size: 2.5rem;
+        }
+
+        .brand-text h1 {
+            color: var(--growth-green);
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--trust-mint-light);
+            border: 2px solid var(--growth-green);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--growth-green);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--growth-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .header-stat {
+            text-align: center;
+        }
+
+        .header-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--growth-green);
+        }
+
+        .header-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            padding: 0.5rem 2rem;
+            position: sticky;
+            top: 80px;
+            z-index: 99;
+        }
+
+        [data-theme="dark"] .nav-container {
+            background: var(--bg-secondary);
+        }
+
+        .main-nav {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: var(--trust-mint-light);
+            color: var(--growth-green);
+        }
+
+        .nav-tab.active {
+            background: var(--growth-green);
+            color: white;
+        }
+
+        /* Main Content */
+        .app-main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .content-panel {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .panel-header h2 {
+            color: var(--growth-green);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .panel-header p {
+            color: var(--text-secondary);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--growth-green);
+        }
+
+        .metric-card.critical::before { background: var(--danger-red); }
+        .metric-card.high::before { background: var(--warning-amber); }
+        .metric-card.medium::before { background: var(--info-blue); }
+        .metric-card.low::before { background: var(--success-green); }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--growth-green);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--growth-green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--trust-mint-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--trust-mint);
+            color: var(--growth-green);
+            border: 1px solid var(--growth-green);
+        }
+
+        .btn-secondary:hover {
+            background: var(--growth-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #B71C1C;
+        }
+
+        /* Vendor Controls */
+        .vendor-controls {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--growth-green);
+        }
+
+        .search-bar select {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Vendors Grid */
+        .vendors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .vendor-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .vendor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--trust-mint);
+        }
+
+        .vendor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .vendor-header h3 {
+            color: var(--growth-green);
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .vendor-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-critical { background: #FFCDD2; color: var(--danger-red); }
+        .badge-high { background: #FFE082; color: var(--warning-amber); }
+        .badge-medium { background: #BBDEFB; color: var(--info-blue); }
+        .badge-low { background: var(--trust-mint); color: var(--growth-green); }
+
+        .vendor-info {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-item .label {
+            color: var(--text-secondary);
+        }
+
+        .info-item .value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .vendor-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .vendor-actions button {
+            flex: 1;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        [data-theme="dark"] .modal-content {
+            background: var(--bg-card);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            color: var(--growth-green);
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close:hover {
+            color: var(--danger-red);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--growth-green);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Charts */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        [data-theme="dark"] .chart-card {
+            background: var(--bg-card);
+        }
+
+        .chart-card h3 {
+            color: var(--growth-green);
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Toast */
+        #toastContainer {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid var(--growth-green);
+        }
+
+        .toast.success { border-left-color: var(--success-green); }
+        .toast.error { border-left-color: var(--danger-red); }
+        .toast.warning { border-left-color: var(--warning-amber); }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            font-size: 4rem;
+            color: var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: var(--growth-green);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-stats {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .main-nav {
+                overflow-x: auto;
+            }
+
+            .vendors-grid,
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vendor-controls {
+                flex-direction: column;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--growth-green);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="vendoriq-app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="brand-logo">🛡️</div>
+                    <div class="brand-text">
+                        <h1>VendorIQ Pro</h1>
+                        <p class="tagline">Enterprise Vendor Risk Management</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="header-stats">
+                        <div class="header-stat">
+                            <div class="header-stat-value" id="totalVendors">0</div>
+                            <div class="header-stat-label">Vendors</div>
+                        </div>
+                        <div class="header-stat">
+                            <div class="header-stat-value" id="highRiskCount">0</div>
+                            <div class="header-stat-label">High Risk</div>
+                        </div>
+                        <div class="header-stat">
+                            <div class="header-stat-value" id="assessmentsCount">0</div>
+                            <div class="header-stat-label">Assessments</div>
+                        </div>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()">
+                        <span id="themeIcon">🌙</span>
+                        <span id="themeText">Dark</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-container">
+            <div class="main-nav">
+                <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+                <button class="nav-tab" onclick="showTab('vendors')">👥 Vendors</button>
+                <button class="nav-tab" onclick="showTab('assessments')">📋 Assessments</button>
+                <button class="nav-tab" onclick="showTab('analytics')">📈 Analytics</button>
+                <button class="nav-tab" onclick="showTab('reports')">📄 Reports</button>
+                <button class="nav-tab" onclick="showTab('data')">💾 Data</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Dashboard Panel -->
+            <div id="dashboard" class="content-panel active">
+                <div class="panel-header">
+                    <h2>Dashboard Overview</h2>
+                    <p>Real-time vendor risk monitoring and analytics</p>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">📊</div>
+                        <div class="metric-value" id="dashTotalVendors">0</div>
+                        <div class="metric-label">Active Vendors</div>
+                    </div>
+                    <div class="metric-card critical">
+                        <div class="metric-icon">🔴</div>
+                        <div class="metric-value" id="dashCritical">0</div>
+                        <div class="metric-label">Critical Risk</div>
+                    </div>
+                    <div class="metric-card high">
+                        <div class="metric-icon">🟠</div>
+                        <div class="metric-value" id="dashHigh">0</div>
+                        <div class="metric-label">High Risk</div>
+                    </div>
+                    <div class="metric-card low">
+                        <div class="metric-icon">✅</div>
+                        <div class="metric-value" id="dashCompliant">0</div>
+                        <div class="metric-label">Compliant</div>
+                    </div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h3>Risk Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Vendor Categories</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Risk Trend Analysis</h3>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendors Panel -->
+            <div id="vendors" class="content-panel">
+                <div class="panel-header">
+                    <h2>Vendor Management</h2>
+                    <p>Manage and monitor your vendor relationships</p>
+                </div>
+
+                <div class="vendor-controls">
+                    <div class="search-bar">
+                        <input type="text" id="vendorSearch" placeholder="Search vendors..." oninput="filterVendors()">
+                        <select id="categoryFilter" onchange="filterVendors()">
+                            <option value="">All Categories</option>
+                            <option value="strategic">Strategic</option>
+                            <option value="operational">Operational</option>
+                            <option value="tactical">Tactical</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddVendor()">➕ Add Vendor</button>
+                </div>
+
+                <div class="vendors-grid" id="vendorsGrid">
+                    <div class="empty-state">
+                        <div style="font-size: 4rem;">📦</div>
+                        <h3>No Vendors Yet</h3>
+                        <p>Add your first vendor to get started with risk management</p>
+                        <button class="btn btn-primary" onclick="openAddVendor()" style="margin-top: 1rem;">Add Vendor</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assessments Panel -->
+            <div id="assessments" class="content-panel">
+                <div class="panel-header">
+                    <h2>Risk Assessments</h2>
+                    <p>Conduct and track vendor risk assessments</p>
+                </div>
+
+                <div class="vendor-controls">
+                    <button class="btn btn-primary" onclick="openAddAssessment()">➕ New Assessment</button>
+                </div>
+
+                <div id="assessmentsList">
+                    <div class="empty-state">
+                        <div style="font-size: 4rem;">📋</div>
+                        <h3>No Assessments</h3>
+                        <p>Create your first assessment to evaluate vendor risks</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Panel -->
+            <div id="analytics" class="content-panel">
+                <div class="panel-header">
+                    <h2>Analytics & Insights</h2>
+                    <p>Data-driven insights for better decision making</p>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">📊</div>
+                        <div class="metric-value" id="avgRisk">0</div>
+                        <div class="metric-label">Avg Risk Score</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⭐</div>
+                        <div class="metric-value" id="strategicCount">0</div>
+                        <div class="metric-label">Strategic Vendors</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">💰</div>
+                        <div class="metric-value" id="totalValue">$0</div>
+                        <div class="metric-label">Total Contract Value</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">📋</div>
+                        <div class="metric-value" id="monthAssessments">0</div>
+                        <div class="metric-label">This Month</div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Risk Score Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Panel -->
+            <div id="reports" class="content-panel">
+                <div class="panel-header">
+                    <h2>Reports & Export</h2>
+                    <p>Generate and export vendor risk reports</p>
+                </div>
+
+                <div style="display: grid; gap: 1rem; max-width: 600px;">
+                    <button class="btn btn-primary" onclick="exportVendors()">📊 Export All Vendors (CSV)</button>
+                    <button class="btn btn-primary" onclick="exportHighRisk()">⚠️ Export High Risk Vendors</button>
+                    <button class="btn btn-primary" onclick="exportAssessments()">📋 Export Assessments</button>
+                    <button class="btn btn-secondary" onclick="generateReport()">📄 Generate Risk Report</button>
+                </div>
+            </div>
+
+            <!-- Data Panel -->
+            <div id="data" class="content-panel">
+                <div class="panel-header">
+                    <h2>Data Management</h2>
+                    <p>Import, export, and manage your data</p>
+                </div>
+
+                <div style="display: grid; gap: 2rem; max-width: 600px;">
+                    <div>
+                        <h3 style="color: var(--growth-green); margin-bottom: 1rem;">Backup & Restore</h3>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <button class="btn btn-primary" onclick="createBackup()">💾 Create Backup</button>
+                            <button class="btn btn-secondary" onclick="confirmRestore()">📥 Restore from Backup</button>
+                            <input type="file" id="backupRestoreFile" accept=".json" style="display: none;" onchange="restoreBackup(event)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: var(--growth-green); margin-bottom: 1rem;">Sample Data</h3>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <button class="btn btn-secondary" onclick="loadSampleVendors()">📦 Load 5 Sample Vendors</button>
+                            <button class="btn btn-secondary" onclick="loadLargeDataset()">📦 Load 20 Sample Vendors</button>
+                            <button class="btn btn-secondary" onclick="loadSampleAssessments()">📋 Generate Sample Assessments</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: var(--danger-red); margin-bottom: 1rem;">Danger Zone</h3>
+                        <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast Container -->
+        <div id="toastContainer"></div>
+
+        <!-- Vendor Modal -->
+        <div id="vendorModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Add Vendor</h2>
+                    <button class="close" onclick="closeVendorModal()">×</button>
+                </div>
+                <form id="vendorForm" onsubmit="saveVendor(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Vendor Name *</label>
+                            <input type="text" id="vendorName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select id="vendorCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="strategic">Strategic</option>
+                                <option value="operational">Operational</option>
+                                <option value="tactical">Tactical</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Sector</label>
+                            <input type="text" id="vendorSector">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="vendorLocation">
+                        </div>
+                        <div class="form-group">
+                            <label>Contract Value ($)</label>
+                            <input type="number" id="vendorValue" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Email</label>
+                            <input type="email" id="vendorContact">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Data Types (comma separated)</label>
+                        <input type="text" id="vendorDataTypes" placeholder="e.g., PII, Financial, PHI">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="vendorNotes"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeVendorModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Vendor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Assessment Modal -->
+        <div id="assessmentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>New Risk Assessment</h2>
+                    <button class="close" onclick="closeAssessmentModal()">×</button>
+                </div>
+                <form id="assessmentForm" onsubmit="saveAssessment(event)">
+                    <div class="form-group">
+                        <label>Select Vendor *</label>
+                        <select id="assessmentVendor" required></select>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Assessment Type</label>
+                            <select id="assessmentType">
+                                <option value="initial">Initial</option>
+                                <option value="annual">Annual</option>
+                                <option value="compliance">Compliance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Security Score (0-100)</label>
+                            <input type="number" id="securityScore" min="0" max="100" value="70">
+                        </div>
+                        <div class="form-group">
+                            <label>Compliance Score (0-100)</label>
+                            <input type="number" id="complianceScore" min="0" max="100" value="70">
+                        </div>
+                        <div class="form-group">
+                            <label>Financial Score (0-100)</label>
+                            <input type="number" id="financialScore" min="0" max="100" value="70">
+                        </div>
+                        <div class="form-group">
+                            <label>Operational Score (0-100)</label>
+                            <input type="number" id="operationalScore" min="0" max="100" value="70">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Findings & Recommendations</label>
+                        <textarea id="assessmentFindings"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAssessmentModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Assessment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global Data
+        let vendors = [];
+        let assessments = [];
+        let charts = {};
+        let currentEditVendor = null;
+        let currentTheme = 'light';
+
+        // Theme Toggle
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            document.getElementById('themeIcon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
+            document.getElementById('themeText').textContent = currentTheme === 'light' ? 'Dark' : 'Light';
+            localStorage.setItem('theme', currentTheme);
+            
+            // Update charts for theme
+            if (Object.keys(charts).length > 0) {
+                updateAllCharts();
+            }
+        }
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 VendorIQ Pro starting...');
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                document.getElementById('themeIcon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
+                document.getElementById('themeText').textContent = currentTheme === 'light' ? 'Dark' : 'Light';
+            }
+            
+            try {
+                loadData();
+                console.log('✓ Data loaded:', vendors.length, 'vendors');
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+            }
+            
+            try {
+                updateAllDisplays();
+                console.log('✓ Displays updated');
+            } catch (error) {
+                console.error('❌ Error updating displays:', error);
+            }
+            
+            try {
+                if (typeof Chart !== 'undefined') {
+                    initializeCharts();
+                    console.log('✓ Charts initialized');
+                } else {
+                    console.warn('⚠️  Chart.js not loaded');
+                }
+            } catch (error) {
+                console.error('❌ Error initializing charts:', error);
+            }
+            
+            console.log('✅ VendorIQ Pro ready!');
+        });
+
+        // Data Persistence
+        function saveData() {
+            localStorage.setItem('vendors', JSON.stringify(vendors));
+            localStorage.setItem('assessments', JSON.stringify(assessments));
+        }
+
+        function loadData() {
+            const savedVendors = localStorage.getItem('vendors');
+            const savedAssessments = localStorage.getItem('assessments');
+            
+            if (savedVendors) vendors = JSON.parse(savedVendors);
+            if (savedAssessments) assessments = JSON.parse(savedAssessments);
+        }
+
+        // Navigation
+        function showTab(tabName) {
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'analytics') {
+                updateAnalytics();
+            }
+        }
+
+        // Update All Displays
+        function updateAllDisplays() {
+            updateHeaderStats();
+            updateDashboard();
+            updateVendorsList();
+            updateAssessmentsList();
+            updateVendorSelectors();
+        }
+
+        function updateHeaderStats() {
+            const critical = vendors.filter(v => v.riskScore >= 80).length;
+            const high = vendors.filter(v => v.riskScore >= 60 && v.riskScore < 80).length;
+            
+            document.getElementById('totalVendors').textContent = vendors.length;
+            document.getElementById('highRiskCount').textContent = critical + high;
+            document.getElementById('assessmentsCount').textContent = assessments.length;
+        }
+
+        function updateDashboard() {
+            const critical = vendors.filter(v => v.riskScore >= 80).length;
+            const high = vendors.filter(v => v.riskScore >= 60 && v.riskScore < 80).length;
+            const medium = vendors.filter(v => v.riskScore >= 40 && v.riskScore < 60).length;
+            const low = vendors.filter(v => v.riskScore < 40).length;
+            
+            document.getElementById('dashTotalVendors').textContent = vendors.length;
+            document.getElementById('dashCritical').textContent = critical;
+            document.getElementById('dashHigh').textContent = high;
+            document.getElementById('dashCompliant').textContent = low;
+            
+            updateDashboardCharts();
+        }
+
+        // Risk Score Calculation
+        function calculateRiskScore(vendor) {
+            let score = 30; // Base score
+            
+            // Category risk
+            if (vendor.category === 'strategic') score += 30;
+            else if (vendor.category === 'operational') score += 20;
+            else score += 10;
+            
+            // Contract value risk
+            if (vendor.contractValue > 500000) score += 25;
+            else if (vendor.contractValue > 100000) score += 15;
+            else score += 5;
+            
+            // Data type risk
+            if (vendor.dataTypes) {
+                const types = vendor.dataTypes.split(',').map(t => t.trim().toLowerCase());
+                if (types.some(t => ['pii', 'phi', 'financial'].includes(t))) score += 20;
+            }
+            
+            // Assessment recency
+            if (vendor.lastAssessment) {
+                const daysSince = Math.floor((Date.now() - new Date(vendor.lastAssessment)) / (1000 * 60 * 60 * 24));
+                if (daysSince > 180) score += 15;
+                else if (daysSince > 90) score += 10;
+                else score -= 10;
+            } else {
+                score += 20;
+            }
+            
+            return Math.min(100, Math.max(0, score));
+        }
+
+        function getRiskLevel(score) {
+            if (score >= 80) return 'Critical';
+            if (score >= 60) return 'High';
+            if (score >= 40) return 'Medium';
+            return 'Low';
+        }
+
+        function getRiskBadgeClass(score) {
+            if (score >= 80) return 'badge-critical';
+            if (score >= 60) return 'badge-high';
+            if (score >= 40) return 'badge-medium';
+            return 'badge-low';
+        }
+
+        // Vendor Management
+        function openAddVendor() {
+            currentEditVendor = null;
+            document.getElementById('modalTitle').textContent = 'Add Vendor';
+            document.getElementById('vendorForm').reset();
+            document.getElementById('vendorModal').classList.add('active');
+        }
+
+        function closeVendorModal() {
+            document.getElementById('vendorModal').classList.remove('active');
+        }
+
+        function editVendor(vendorId) {
+            const vendor = vendors.find(v => v.id === vendorId);
+            if (!vendor) return;
+            
+            currentEditVendor = vendorId;
+            document.getElementById('modalTitle').textContent = 'Edit Vendor';
+            document.getElementById('vendorName').value = vendor.name;
+            document.getElementById('vendorCategory').value = vendor.category;
+            document.getElementById('vendorSector').value = vendor.sector || '';
+            document.getElementById('vendorLocation').value = vendor.location || '';
+            document.getElementById('vendorValue').value = vendor.contractValue || '';
+            document.getElementById('vendorContact').value = vendor.contact || '';
+            document.getElementById('vendorDataTypes').value = vendor.dataTypes || '';
+            document.getElementById('vendorNotes').value = vendor.notes || '';
+            
+            document.getElementById('vendorModal').classList.add('active');
+        }
+
+        function saveVendor(event) {
+            event.preventDefault();
+            
+            const vendorData = {
+                name: document.getElementById('vendorName').value,
+                category: document.getElementById('vendorCategory').value,
+                sector: document.getElementById('vendorSector').value,
+                location: document.getElementById('vendorLocation').value,
+                contractValue: parseInt(document.getElementById('vendorValue').value) || 0,
+                contact: document.getElementById('vendorContact').value,
+                dataTypes: document.getElementById('vendorDataTypes').value,
+                notes: document.getElementById('vendorNotes').value
+            };
+            
+            if (currentEditVendor) {
+                const vendor = vendors.find(v => v.id === currentEditVendor);
+                Object.assign(vendor, vendorData);
+                vendor.riskScore = calculateRiskScore(vendor);
+                showToast('Success', 'Vendor updated successfully', 'success');
+            } else {
+                const vendor = {
+                    id: 'vendor-' + Date.now(),
+                    ...vendorData,
+                    createdAt: new Date().toISOString(),
+                    lastAssessment: null
+                };
+                vendor.riskScore = calculateRiskScore(vendor);
+                vendors.push(vendor);
+                showToast('Success', 'Vendor added successfully', 'success');
+            }
+            
+            saveData();
+            updateAllDisplays();
+            closeVendorModal();
+        }
+
+        function deleteVendor(vendorId) {
+            if (!confirm('Are you sure you want to delete this vendor?')) return;
+            
+            vendors = vendors.filter(v => v.id !== vendorId);
+            assessments = assessments.filter(a => a.vendorId !== vendorId);
+            
+            saveData();
+            updateAllDisplays();
+            showToast('Deleted', 'Vendor removed successfully', 'warning');
+        }
+
+        function updateVendorsList() {
+            const grid = document.getElementById('vendorsGrid');
+            
+            if (vendors.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 4rem;">📦</div>
+                        <h3>No Vendors Yet</h3>
+                        <p>Add your first vendor to get started</p>
+                        <button class="btn btn-primary" onclick="openAddVendor()" style="margin-top: 1rem;">Add Vendor</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = vendors.map(v => `
+                <div class="vendor-card">
+                    <div class="vendor-header">
+                        <h3>${v.name}</h3>
+                        <div class="vendor-badges">
+                            <span class="badge ${getRiskBadgeClass(v.riskScore)}">${getRiskLevel(v.riskScore)}</span>
+                        </div>
+                    </div>
+                    <div class="vendor-info">
+                        <div class="info-item">
+                            <span class="label">Category:</span>
+                            <span class="value">${v.category}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Risk Score:</span>
+                            <span class="value">${v.riskScore}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Contract:</span>
+                            <span class="value">$${v.contractValue.toLocaleString()}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Last Assessment:</span>
+                            <span class="value">${v.lastAssessment ? new Date(v.lastAssessment).toLocaleDateString() : 'Never'}</span>
+                        </div>
+                    </div>
+                    <div class="vendor-actions">
+                        <button class="btn btn-secondary" onclick="editVendor('${v.id}')">✏️ Edit</button>
+                        <button class="btn btn-danger" onclick="deleteVendor('${v.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterVendors() {
+            const search = document.getElementById('vendorSearch').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            
+            const filtered = vendors.filter(v => {
+                const matchesSearch = v.name.toLowerCase().includes(search) || 
+                                    (v.sector && v.sector.toLowerCase().includes(search));
+                const matchesCategory = !category || v.category === category;
+                return matchesSearch && matchesCategory;
+            });
+            
+            const grid = document.getElementById('vendorsGrid');
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No vendors found</h3></div>';
+                return;
+            }
+            
+            grid.innerHTML = filtered.map(v => `
+                <div class="vendor-card">
+                    <div class="vendor-header">
+                        <h3>${v.name}</h3>
+                        <span class="badge ${getRiskBadgeClass(v.riskScore)}">${getRiskLevel(v.riskScore)}</span>
+                    </div>
+                    <div class="vendor-info">
+                        <div class="info-item">
+                            <span class="label">Category:</span>
+                            <span class="value">${v.category}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Risk Score:</span>
+                            <span class="value">${v.riskScore}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Contract:</span>
+                            <span class="value">$${v.contractValue.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div class="vendor-actions">
+                        <button class="btn btn-secondary" onclick="editVendor('${v.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteVendor('${v.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Assessment Management
+        function openAddAssessment() {
+            if (vendors.length === 0) {
+                showToast('No Vendors', 'Please add vendors before creating assessments', 'warning');
+                return;
+            }
+            document.getElementById('assessmentModal').classList.add('active');
+        }
+
+        function closeAssessmentModal() {
+            document.getElementById('assessmentModal').classList.remove('active');
+        }
+
+        function updateVendorSelectors() {
+            const select = document.getElementById('assessmentVendor');
+            select.innerHTML = '<option value="">Select a vendor</option>' + 
+                vendors.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+        }
+
+        function saveAssessment(event) {
+            event.preventDefault();
+            
+            const vendorId = document.getElementById('assessmentVendor').value;
+            const vendor = vendors.find(v => v.id === vendorId);
+            
+            if (!vendor) {
+                showToast('Error', 'Please select a vendor', 'error');
+                return;
+            }
+            
+            const assessment = {
+                id: 'assessment-' + Date.now(),
+                vendorId: vendorId,
+                vendorName: vendor.name,
+                assessmentType: document.getElementById('assessmentType').value,
+                securityScore: parseInt(document.getElementById('securityScore').value),
+                complianceScore: parseInt(document.getElementById('complianceScore').value),
+                financialScore: parseInt(document.getElementById('financialScore').value),
+                operationalScore: parseInt(document.getElementById('operationalScore').value),
+                findings: document.getElementById('assessmentFindings').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            assessments.push(assessment);
+            vendor.lastAssessment = assessment.createdAt;
+            vendor.riskScore = calculateRiskScore(vendor);
+            
+            saveData();
+            updateAllDisplays();
+            closeAssessmentModal();
+            showToast('Success', 'Assessment saved successfully', 'success');
+        }
+
+        function updateAssessmentsList() {
+            const list = document.getElementById('assessmentsList');
+            
+            if (assessments.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 4rem;">📋</div>
+                        <h3>No Assessments</h3>
+                        <p>Create your first assessment</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = '<div style="display: grid; gap: 1rem;">' + 
+                assessments.map(a => `
+                    <div class="vendor-card">
+                        <h3 style="color: var(--growth-green); margin-bottom: 1rem;">${a.vendorName}</h3>
+                        <div class="vendor-info">
+                            <div class="info-item">
+                                <span class="label">Type:</span>
+                                <span class="value">${a.assessmentType}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Security:</span>
+                                <span class="value">${a.securityScore}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Compliance:</span>
+                                <span class="value">${a.complianceScore}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Financial:</span>
+                                <span class="value">${a.financialScore}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Date:</span>
+                                <span class="value">${new Date(a.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        ${a.findings ? `<p style="margin-top: 1rem; color: var(--text-secondary);">${a.findings}</p>` : ''}
+                        <button class="btn btn-danger" onclick="deleteAssessment('${a.id}')" style="margin-top: 1rem;">Delete</button>
+                    </div>
+                `).join('') + '</div>';
+        }
+
+        function deleteAssessment(assessmentId) {
+            if (!confirm('Delete this assessment?')) return;
+            assessments = assessments.filter(a => a.id !== assessmentId);
+            saveData();
+            updateAllDisplays();
+            showToast('Deleted', 'Assessment removed', 'warning');
+        }
+
+        // Analytics
+        function updateAnalytics() {
+            const avgRisk = vendors.length > 0
+                ? Math.round(vendors.reduce((sum, v) => sum + v.riskScore, 0) / vendors.length)
+                : 0;
+            
+            const strategicCount = vendors.filter(v => v.category === 'strategic').length;
+            const totalValue = vendors.reduce((sum, v) => sum + (v.contractValue || 0), 0);
+            
+            const thisMonth = new Date();
+            const monthAssessments = assessments.filter(a => {
+                const aDate = new Date(a.createdAt);
+                return aDate.getMonth() === thisMonth.getMonth() && 
+                       aDate.getFullYear() === thisMonth.getFullYear();
+            }).length;
+            
+            document.getElementById('avgRisk').textContent = avgRisk;
+            document.getElementById('strategicCount').textContent = strategicCount;
+            document.getElementById('totalValue').textContent = '$' + totalValue.toLocaleString();
+            document.getElementById('monthAssessments').textContent = monthAssessments;
+            
+            updateAnalyticsChart();
+        }
+
+        // Charts
+        function initializeCharts() {
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded');
+                return;
+            }
+            
+            const isDark = currentTheme === 'dark';
+            const textColor = isDark ? '#a0a8bc' : '#757575';
+            const gridColor = isDark ? '#2d3748' : '#E0E0E0';
+            
+            // Risk Chart
+            const riskCtx = document.getElementById('riskChart');
+            charts.risk = new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#C62828', '#F57C00', '#0277BD', '#2E7D32'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                color: textColor,
+                                font: { size: 12, weight: '600' }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Category Chart
+            const categoryCtx = document.getElementById('categoryChart');
+            charts.category = new Chart(categoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Strategic', 'Operational', 'Tactical'],
+                    datasets: [{
+                        label: 'Vendors',
+                        data: [0, 0, 0],
+                        backgroundColor: ['#33691E', '#689F38', '#C5E1A5'],
+                        borderWidth: 0,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            
+            // Trend Chart
+            const trendCtx = document.getElementById('trendChart');
+            charts.trend = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Average Risk Score',
+                        data: [45, 48, 42, 50, 47, 45],
+                        borderColor: '#33691E',
+                        backgroundColor: 'rgba(51, 105, 30, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            
+            // Analytics Chart
+            const analyticsCtx = document.getElementById('analyticsChart');
+            charts.analytics = new Chart(analyticsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-20', '21-40', '41-60', '61-80', '81-100'],
+                    datasets: [{
+                        label: 'Vendors',
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#2E7D32', '#C5E1A5', '#0277BD', '#F57C00', '#C62828'],
+                        borderWidth: 0,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            
+            updateAllCharts();
+        }
+
+        function updateAllCharts() {
+            updateDashboardCharts();
+            updateAnalyticsChart();
+        }
+
+        function updateDashboardCharts() {
+            if (!charts.risk || !charts.category) return;
+            
+            const critical = vendors.filter(v => v.riskScore >= 80).length;
+            const high = vendors.filter(v => v.riskScore >= 60 && v.riskScore < 80).length;
+            const medium = vendors.filter(v => v.riskScore >= 40 && v.riskScore < 60).length;
+            const low = vendors.filter(v => v.riskScore < 40).length;
+            
+            charts.risk.data.datasets[0].data = [critical, high, medium, low];
+            charts.risk.update();
+            
+            const strategic = vendors.filter(v => v.category === 'strategic').length;
+            const operational = vendors.filter(v => v.category === 'operational').length;
+            const tactical = vendors.filter(v => v.category === 'tactical').length;
+            
+            charts.category.data.datasets[0].data = [strategic, operational, tactical];
+            charts.category.update();
+        }
+
+        function updateAnalyticsChart() {
+            if (!charts.analytics) return;
+            
+            const range1 = vendors.filter(v => v.riskScore <= 20).length;
+            const range2 = vendors.filter(v => v.riskScore > 20 && v.riskScore <= 40).length;
+            const range3 = vendors.filter(v => v.riskScore > 40 && v.riskScore <= 60).length;
+            const range4 = vendors.filter(v => v.riskScore > 60 && v.riskScore <= 80).length;
+            const range5 = vendors.filter(v => v.riskScore > 80).length;
+            
+            charts.analytics.data.datasets[0].data = [range1, range2, range3, range4, range5];
+            charts.analytics.update();
+        }
+
+        // Export Functions
+        function exportVendors() {
+            const csv = [
+                ['Name', 'Category', 'Risk Score', 'Contract Value', 'Location', 'Last Assessment'].join(','),
+                ...vendors.map(v => [
+                    v.name,
+                    v.category,
+                    v.riskScore,
+                    v.contractValue,
+                    v.location || '',
+                    v.lastAssessment ? new Date(v.lastAssessment).toLocaleDateString() : 'Never'
+                ].join(','))
+            ].join('\n');
+            
+            downloadCSV(csv, 'vendors.csv');
+            showToast('Exported', 'Vendors exported successfully', 'success');
+        }
+
+        function exportHighRisk() {
+            const highRisk = vendors.filter(v => v.riskScore >= 60);
+            const csv = [
+                ['Name', 'Risk Score', 'Risk Level', 'Category', 'Contract Value'].join(','),
+                ...highRisk.map(v => [
+                    v.name,
+                    v.riskScore,
+                    getRiskLevel(v.riskScore),
+                    v.category,
+                    v.contractValue
+                ].join(','))
+            ].join('\n');
+            
+            downloadCSV(csv, 'high-risk-vendors.csv');
+            showToast('Exported', `${highRisk.length} high-risk vendors exported`, 'success');
+        }
+
+        function exportAssessments() {
+            const csv = [
+                ['Vendor', 'Type', 'Security', 'Compliance', 'Financial', 'Operational', 'Date'].join(','),
+                ...assessments.map(a => [
+                    a.vendorName,
+                    a.assessmentType,
+                    a.securityScore,
+                    a.complianceScore,
+                    a.financialScore,
+                    a.operationalScore,
+                    new Date(a.createdAt).toLocaleDateString()
+                ].join(','))
+            ].join('\n');
+            
+            downloadCSV(csv, 'assessments.csv');
+            showToast('Exported', 'Assessments exported successfully', 'success');
+        }
+
+        function generateReport() {
+            const report = {
+                generated: new Date().toISOString(),
+                summary: {
+                    totalVendors: vendors.length,
+                    criticalRisk: vendors.filter(v => v.riskScore >= 80).length,
+                    highRisk: vendors.filter(v => v.riskScore >= 60 && v.riskScore < 80).length,
+                    totalAssessments: assessments.length
+                },
+                vendors: vendors,
+                assessments: assessments
+            };
+            
+            downloadJSON(report, 'risk-report.json');
+            showToast('Generated', 'Risk report generated', 'success');
+        }
+
+        // Data Management
+        function createBackup() {
+            const backup = {
+                vendors,
+                assessments,
+                backupDate: new Date().toISOString(),
+                version: '2.0'
+            };
+            
+            downloadJSON(backup, `vendoriq-backup-${new Date().toISOString().split('T')[0]}.json`);
+            showToast('Success', 'Backup created successfully', 'success');
+        }
+
+        function confirmRestore() {
+            if (confirm('⚠️ Restoring will replace all current data. Continue?')) {
+                document.getElementById('backupRestoreFile').click();
+            }
+        }
+
+        function restoreBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    
+                    if (!backup.vendors || !Array.isArray(backup.vendors)) {
+                        throw new Error('Invalid backup file');
+                    }
+                    
+                    vendors = backup.vendors;
+                    assessments = backup.assessments || [];
+                    
+                    saveData();
+                    updateAllDisplays();
+                    showToast('Success', 'Data restored successfully', 'success');
+                } catch (error) {
+                    showToast('Error', error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            if (!confirm('⚠️ This will delete ALL data. Are you sure?')) return;
+            if (!confirm('This CANNOT be undone. Confirm deletion?')) return;
+            
+            vendors = [];
+            assessments = [];
+            saveData();
+            updateAllDisplays();
+            showToast('Cleared', 'All data deleted', 'warning');
+        }
+
+        // Sample Data
+        function loadSampleVendors() {
+            const samples = generateSampleVendors(5);
+            vendors = [...vendors, ...samples];
+            saveData();
+            updateAllDisplays();
+            showToast('Loaded', '5 sample vendors added', 'success');
+        }
+
+        function loadLargeDataset() {
+            const samples = generateSampleVendors(20);
+            vendors = [...vendors, ...samples];
+            saveData();
+            updateAllDisplays();
+            showToast('Loaded', '20 sample vendors added', 'success');
+        }
+
+        function loadSampleAssessments() {
+            if (vendors.length === 0) {
+                showToast('Error', 'Add vendors first', 'warning');
+                return;
+            }
+            
+            const samples = vendors.slice(0, Math.min(5, vendors.length)).map(v => ({
+                id: 'assessment-' + Date.now() + '-' + Math.random(),
+                vendorId: v.id,
+                vendorName: v.name,
+                assessmentType: ['initial', 'annual', 'compliance'][Math.floor(Math.random() * 3)],
+                securityScore: Math.floor(Math.random() * 30) + 70,
+                complianceScore: Math.floor(Math.random() * 30) + 70,
+                financialScore: Math.floor(Math.random() * 30) + 70,
+                operationalScore: Math.floor(Math.random() * 30) + 70,
+                findings: 'Sample assessment findings',
+                createdAt: new Date().toISOString()
+            }));
+            
+            assessments = [...assessments, ...samples];
+            samples.forEach(a => {
+                const vendor = vendors.find(v => v.id === a.vendorId);
+                if (vendor) vendor.lastAssessment = a.createdAt;
+            });
+            
+            saveData();
+            updateAllDisplays();
+            showToast('Loaded', `${samples.length} assessments added`, 'success');
+        }
+
+        function generateSampleVendors(count) {
+            const names = ['TechCorp', 'DataSystems', 'CloudServe', 'SecureNet', 'FinTech', 
+                          'HealthCare', 'LogisTrans', 'ConsultPro', 'DevOps', 'InfoSec'];
+            const categories = ['strategic', 'operational', 'tactical'];
+            const sectors = ['Technology', 'Finance', 'Healthcare', 'Manufacturing', 'Retail'];
+            const locations = ['USA', 'UK', 'Germany', 'Canada', 'France'];
+            
+            const samples = [];
+            for (let i = 0; i < count; i++) {
+                const vendor = {
+                    id: 'sample-' + Date.now() + '-' + i,
+                    name: names[i % names.length] + ' ' + (Math.floor(Math.random() * 100) + 1),
+                    category: categories[Math.floor(Math.random() * categories.length)],
+                    sector: sectors[Math.floor(Math.random() * sectors.length)],
+                    location: locations[Math.floor(Math.random() * locations.length)],
+                    contractValue: Math.floor(Math.random() * 500000) + 50000,
+                    contact: `contact@vendor${i}.com`,
+                    dataTypes: 'PII, Financial',
+                    notes: 'Sample vendor',
+                    createdAt: new Date().toISOString(),
+                    lastAssessment: null
+                };
+                
+                vendor.riskScore = calculateRiskScore(vendor);
+                samples.push(vendor);
+            }
+            
+            return samples;
+        }
+
+        // Utility Functions
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Toast Notifications
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type]}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease reverse';
+                setTimeout(() => container.removeChild(toast), 300);
+            }, 4000);
+        }
+
+        // Modal Click Outside
+        document.getElementById('vendorModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVendorModal();
+        });
+
+        document.getElementById('assessmentModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAssessmentModal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+.card {
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .card {
+  background-color: #1F2937;
+  border-color: #374151;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Variants */
+.card-default {
+  border-left: 1px solid var(--border-color);
+}
+
+.card-assessment {
+  border-left: 4px solid var(--vendorsoluce-navy);
+}
+
+.card-assessment:hover {
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-sbom {
+  border-left: 4px solid var(--vendorsoluce-teal);
+}
+
+.card-sbom:hover {
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-vendor {
+  border-left: 4px solid var(--vendorsoluce-blue);
+}
+
+.card-vendor:hover {
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Card Subcomponents */
+.card-header {
+  padding: 16px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+[data-theme="dark"] .card-title {
+  color: var(--text-primary);
+}
+
+.card-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+[data-theme="dark"] .card-description {
+  color: #9CA3AF;
+}
+
+.card-content {
+  padding: 16px;
+  padding-top: 0;
+}
+
+.card-header + .card-content {
+  padding-top: 0;
+}
+
