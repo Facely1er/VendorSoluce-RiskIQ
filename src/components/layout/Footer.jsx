@@ -29,8 +29,8 @@ const Footer = () => {
               <img src="/vendorsoluce.png" alt="VendorSoluce Logo" className="footer-logo" />
               <div className="footer-brand-text">
                 <span className="footer-brand-name">VendorSoluce™</span>
-                <span className="footer-brand-tagline">A Supply Chain Assurance</span>
-                <span className="footer-brand-tagline">by ERMITS</span>
+                <span className="footer-brand-tagline">Supply Chain Radar</span>
+                <span className="footer-brand-tagline-secondary">by ERMITS</span>
               </div>
             </div>
             <p className="footer-company-description">

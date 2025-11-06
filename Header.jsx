@@ -23,7 +23,7 @@ const Header = () => {
               />
               <div className="brand-text">
                 <h1 className="brand-title">VendorSoluce™</h1>
-                <p className="brand-tagline">A Supply Chain Assurance</p>
+                <p className="brand-tagline">Supply Chain Radar</p>
                 <p className="brand-tagline-secondary">by ERMITS</p>
               </div>
             </Link>
