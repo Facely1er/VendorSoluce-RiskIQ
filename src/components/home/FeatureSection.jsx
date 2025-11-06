@@ -8,7 +8,7 @@ const FeatureSection = () => {
   const features = [
     {
       icon: <Shield size={32} color="var(--vendorsoluce-green)" />,
-      title: 'Supply Chain Assessment',
+      title: 'Vendor Risk IQ',
       description: 'Comprehensive NIST SP 800-161 compliant assessment framework for vendor risk evaluation.',
       path: '/assessments'
     },
@@ -20,8 +20,8 @@ const FeatureSection = () => {
     },
     {
       icon: <BarChart3 size={32} color="var(--vendorsoluce-green)" />,
-      title: 'Vendor Dashboard',
-      description: 'Real-time vendor risk monitoring with comprehensive analytics and reporting.',
+      title: 'Risk Radar',
+      description: 'Real-time vendor risk monitoring dashboard with interactive visualization and comprehensive analytics.',
       path: '/dashboard'
     },
     {

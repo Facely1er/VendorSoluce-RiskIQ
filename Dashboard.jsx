@@ -126,8 +126,8 @@ const Dashboard = () => {
     <div className="page-content dashboard-page">
       <div className="page-header">
         <div>
-          <h2>Dashboard Overview</h2>
-          <p>Real-time vendor risk monitoring and analytics</p>
+          <h2>Risk Radar</h2>
+          <p>Real-time vendor risk monitoring and analytics dashboard</p>
         </div>
         <div className="page-header-actions">
           <TierBadge showUsage={true} />
