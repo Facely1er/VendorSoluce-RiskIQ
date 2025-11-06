@@ -36,6 +36,9 @@
   height: 48px;
   width: 48px;
   margin-right: 8px;
+  object-fit: contain;
+  display: block;
+  opacity: 1;
 }
 
 .footer-brand-text {
@@ -52,6 +55,13 @@
 }
 
 .footer-brand-tagline {
+  display: block;
+  font-size: 12px;
+  color: var(--vendorsoluce-green);
+  font-weight: 700;
+}
+
+.footer-brand-tagline-secondary {
   display: block;
   font-size: 12px;
   color: #9CA3AF;

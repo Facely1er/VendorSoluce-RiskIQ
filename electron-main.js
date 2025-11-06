@@ -187,7 +187,7 @@ function createMenu() {
               type: 'info',
               title: 'About VendorSoluce™ RiskIQ',
               message: `VendorSoluce™ RiskIQ`,
-              detail: `Version: ${version}\n\nEnterprise Vendor Risk Management Platform\n\nA Supply Chain Assurance by ERMITS\n\n© ${new Date().getFullYear()} VendorSoluce. All rights reserved.`,
+              detail: `Version: ${version}\n\nEnterprise Vendor Risk Management Platform\n\nSupply Chain Radar by ERMITS\n\n© ${new Date().getFullYear()} VendorSoluce. All rights reserved.`,
               buttons: ['OK']
             });
           }
