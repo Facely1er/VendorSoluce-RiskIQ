@@ -3,6 +3,7 @@ import { Plus, Search, Edit, Trash2, X, AlertCircle } from 'lucide-react';
 import { useApp } from './AppContext';
 import { getRiskLevel, getRiskBadgeClass, formatCurrency, formatDate } from './helpers';
 import { getUsagePercentage, isApproachingLimit, isAtLimit } from './utils/tierConfig';
+import { validateVendorForm } from './utils/validation';
 import './Vendors.css';
 
 const Vendors = () => {
@@ -11,6 +12,7 @@ const Vendors = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -40,6 +42,8 @@ const Vendors = () => {
       triggerUpgradeModal(`You've reached your vendor limit (${tierLimits.maxVendors}). Upgrade to add more vendors.`);
       return;
     }
+
+    setFormErrors({});
 
     if (vendor) {
       setEditingVendor(vendor);
@@ -72,6 +76,7 @@ const Vendors = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingVendor(null);
+    setFormErrors({});
     setFormData({
       name: '',
       category: '',
@@ -87,15 +92,19 @@ const Vendors = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    const vendorData = {
-      ...formData,
-      contractValue: parseInt(formData.contractValue) || 0
-    };
+    const validation = validateVendorForm(formData);
+
+    if (!validation.valid) {
+      setFormErrors(validation.errors);
+      return;
+    }
+
+    setFormErrors({});
 
     if (editingVendor) {
-      updateVendor(editingVendor.id, vendorData);
+      updateVendor(editingVendor.id, validation.data);
     } else {
-      addVendor(vendorData);
+      addVendor(validation.data);
     }
 
     handleCloseModal();
@@ -207,8 +216,8 @@ const Vendors = () => {
               <div className="vendor-header">
                 <h3>{vendor.name}</h3>
                 <div className="vendor-badges">
-                  <span className={`badge ${getRiskBadgeClass(vendor.riskScore)}`}>
-                    {getRiskLevel(vendor.riskScore)}
+                  <span className={`badge ${getRiskBadgeClass(vendor.riskScore ?? 0)}`}>
+                    {getRiskLevel(vendor.riskScore ?? 0)}
                   </span>
                 </div>
               </div>
@@ -216,11 +225,11 @@ const Vendors = () => {
               <div className="vendor-info">
                 <div className="info-item">
                   <span className="label">Category:</span>
-                  <span className="value">{vendor.category}</span>
+                  <span className="value">{vendor.category || 'N/A'}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">Risk Score:</span>
-                  <span className="value">{vendor.riskScore}</span>
+                  <span className="value">{vendor.riskScore ?? 'N/A'}</span>
                 </div>
                 {vendor.sector && (
                   <div className="info-item">
@@ -290,23 +299,39 @@ const Vendors = () => {
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      if (formErrors.name) setFormErrors({ ...formErrors, name: null });
+                    }}
                     required
+                    aria-invalid={!!formErrors.name}
+                    aria-describedby={formErrors.name ? 'name-error' : undefined}
                   />
+                  {formErrors.name && (
+                    <span id="name-error" className="form-error" role="alert">{formErrors.name}</span>
+                  )}
                 </div>
 
                 <div className="form-group">
                   <label>Category *</label>
                   <select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, category: e.target.value });
+                      if (formErrors.category) setFormErrors({ ...formErrors, category: null });
+                    }}
                     required
+                    aria-invalid={!!formErrors.category}
+                    aria-describedby={formErrors.category ? 'category-error' : undefined}
                   >
                     <option value="">Select Category</option>
                     <option value="strategic">Strategic</option>
                     <option value="operational">Operational</option>
                     <option value="tactical">Tactical</option>
                   </select>
+                  {formErrors.category && (
+                    <span id="category-error" className="form-error" role="alert">{formErrors.category}</span>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -334,10 +359,18 @@ const Vendors = () => {
                   <input
                     type="number"
                     value={formData.contractValue}
-                    onChange={(e) => setFormData({ ...formData, contractValue: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, contractValue: e.target.value });
+                      if (formErrors.contractValue) setFormErrors({ ...formErrors, contractValue: null });
+                    }}
                     min="0"
                     placeholder="0"
+                    aria-invalid={!!formErrors.contractValue}
+                    aria-describedby={formErrors.contractValue ? 'contractValue-error' : undefined}
                   />
+                  {formErrors.contractValue && (
+                    <span id="contractValue-error" className="form-error" role="alert">{formErrors.contractValue}</span>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -345,9 +378,17 @@ const Vendors = () => {
                   <input
                     type="email"
                     value={formData.contact}
-                    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, contact: e.target.value });
+                      if (formErrors.contact) setFormErrors({ ...formErrors, contact: null });
+                    }}
                     placeholder="contact@vendor.com"
+                    aria-invalid={!!formErrors.contact}
+                    aria-describedby={formErrors.contact ? 'contact-error' : undefined}
                   />
+                  {formErrors.contact && (
+                    <span id="contact-error" className="form-error" role="alert">{formErrors.contact}</span>
+                  )}
                 </div>
               </div>
 

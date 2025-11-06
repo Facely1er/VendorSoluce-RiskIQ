@@ -1,6 +1,8 @@
 // License Validation System for VendorSoluce RiskIQ
 // This validates license keys for the downloadable version
 
+import logger from './logger';
+
 /**
  * License Key Format: TIER-XXXX-XXXX-XXXX-XXXX
  * Examples:
@@ -95,7 +97,7 @@ export const validateLicenseOnline = async (key) => {
     };
   } catch (error) {
     // If online validation fails, fall back to offline validation
-    console.warn('Online validation failed, using offline mode:', error.message);
+    logger.warn('Online validation failed, using offline mode:', error.message);
     return validateLicenseOffline(key);
   }
 };
@@ -141,7 +143,7 @@ export const getStoredLicense = () => {
       };
     }
   } catch (error) {
-    console.error('Error reading stored license:', error);
+    logger.error('Error reading stored license:', error);
   }
   return null;
 };
@@ -167,7 +169,7 @@ export const storeLicense = (licenseInfo) => {
     
     return true;
   } catch (error) {
-    console.error('Error storing license:', error);
+    logger.error('Error storing license:', error);
     return false;
   }
 };
@@ -182,7 +184,7 @@ export const removeLicense = () => {
     localStorage.removeItem('licenseData');
     return true;
   } catch (error) {
-    console.error('Error removing license:', error);
+    logger.error('Error removing license:', error);
     return false;
   }
 };
@@ -321,10 +323,10 @@ export const checkLicenseStatus = async () => {
   try {
     const revalidated = await validateLicenseOnline(stored.key);
     if (!revalidated.valid) {
-      console.warn('License revalidation failed, continuing with cached license');
+      logger.warn('License revalidation failed, continuing with cached license');
     }
   } catch (error) {
-    console.warn('Could not revalidate license online:', error.message);
+    logger.warn('Could not revalidate license online:', error.message);
   }
   
   return {

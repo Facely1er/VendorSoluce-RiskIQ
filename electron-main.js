@@ -220,48 +220,64 @@ function createMenu() {
 
 // IPC Handlers for file system operations (if needed)
 ipcMain.handle('save-file', async (event, data) => {
-  const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
-    title: 'Save Export',
-    defaultPath: path.join(app.getPath('documents'), 'vendorsoluce-export.json'),
-    filters: [
-      { name: 'JSON Files', extensions: ['json'] },
-      { name: 'CSV Files', extensions: ['csv'] },
-      { name: 'All Files', extensions: ['*'] }
-    ]
-  });
-
-  if (!canceled && filePath) {
-    try {
-      fs.writeFileSync(filePath, data);
-      return { success: true, path: filePath };
-    } catch (error) {
-      return { success: false, error: error.message };
+  try {
+    if (!mainWindow) {
+      return { success: false, error: 'Main window not available' };
     }
+
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+      title: 'Save Export',
+      defaultPath: path.join(app.getPath('documents'), 'vendorsoluce-export.json'),
+      filters: [
+        { name: 'JSON Files', extensions: ['json'] },
+        { name: 'CSV Files', extensions: ['csv'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    });
+
+    if (!canceled && filePath) {
+      try {
+        fs.writeFileSync(filePath, data);
+        return { success: true, path: filePath };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+    return { success: false, error: 'Save cancelled' };
+  } catch (error) {
+    return { success: false, error: error.message || 'Save operation failed' };
   }
-  return { success: false, error: 'Save cancelled' };
 });
 
 ipcMain.handle('open-file', async (event) => {
-  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-    title: 'Import Data',
-    defaultPath: app.getPath('documents'),
-    filters: [
-      { name: 'JSON Files', extensions: ['json'] },
-      { name: 'CSV Files', extensions: ['csv'] },
-      { name: 'All Files', extensions: ['*'] }
-    ],
-    properties: ['openFile']
-  });
-
-  if (!canceled && filePaths.length > 0) {
-    try {
-      const data = fs.readFileSync(filePaths[0], 'utf-8');
-      return { success: true, data, path: filePaths[0] };
-    } catch (error) {
-      return { success: false, error: error.message };
+  try {
+    if (!mainWindow) {
+      return { success: false, error: 'Main window not available' };
     }
+
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: 'Import Data',
+      defaultPath: app.getPath('documents'),
+      filters: [
+        { name: 'JSON Files', extensions: ['json'] },
+        { name: 'CSV Files', extensions: ['csv'] },
+        { name: 'All Files', extensions: ['*'] }
+      ],
+      properties: ['openFile']
+    });
+
+    if (!canceled && filePaths.length > 0) {
+      try {
+        const data = fs.readFileSync(filePaths[0], 'utf-8');
+        return { success: true, data, path: filePaths[0] };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+    return { success: false, error: 'Open cancelled' };
+  } catch (error) {
+    return { success: false, error: error.message || 'Open operation failed' };
   }
-  return { success: false, error: 'Open cancelled' };
 });
 
 // Get app version
@@ -296,9 +312,12 @@ app.on('window-all-closed', () => {
 // Handle app updates (can be enhanced with electron-updater)
 app.on('ready', () => {
   // Auto-update logic can be added here
-  console.log('VendorSoluce RiskIQ is ready!');
-  console.log(`Version: ${app.getVersion()}`);
-  console.log(`Environment: ${app.isPackaged ? 'Production' : 'Development'}`);
+  // Only log in development mode
+  if (!app.isPackaged) {
+    console.log('VendorSoluce RiskIQ is ready!');
+    console.log(`Version: ${app.getVersion()}`);
+    console.log(`Environment: Development`);
+  }
 });
 
 // Prevent multiple instances
@@ -318,7 +337,19 @@ if (!gotTheLock) {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
+  // Always log uncaught exceptions for debugging
   console.error('Uncaught exception:', error);
-  dialog.showErrorBox('Error', `An error occurred: ${error.message}`);
+  // Show user-friendly error dialog (only if dialog is available)
+  try {
+    if (dialog && typeof dialog.showErrorBox === 'function') {
+      dialog.showErrorBox(
+        'Application Error',
+        `An unexpected error occurred. Please restart the application.\n\nError: ${error.message || 'Unknown error'}`
+      );
+    }
+  } catch (dialogError) {
+    // Fallback if dialog is not available
+    console.error('Could not show error dialog:', dialogError);
+  }
 });
 

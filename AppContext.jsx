@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { TIER_NAMES, getTierConfig, canAddVendor, canAddAssessment } from './utils/tierConfig';
 import { checkLicenseStatus } from './utils/licenseValidator';
+import { initializeEnvironment } from './utils/envValidator';
+import logger from './utils/logger';
 
 const AppContext = createContext();
 
@@ -19,55 +21,101 @@ export const AppProvider = ({ children }) => {
   const [toast, setToast] = useState(null);
   const [licenseTier, setLicenseTierState] = useState(TIER_NAMES.FREE);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Define showToast early using useCallback to avoid stale closures
+  const showToast = useCallback((title, message, type = 'info') => {
+    setToast({ title, message, type, id: Date.now() });
+    setTimeout(() => setToast(null), 4000);
+  }, []);
 
   // Load data from localStorage on mount
   useEffect(() => {
     const loadInitialData = async () => {
-      const savedVendors = localStorage.getItem('vendors');
-      const savedAssessments = localStorage.getItem('assessments');
-      const savedTheme = localStorage.getItem('theme');
-
-      if (savedVendors) setVendors(JSON.parse(savedVendors));
-      if (savedAssessments) setAssessments(JSON.parse(savedAssessments));
-      if (savedTheme) setTheme(savedTheme);
-
-      // Check license status on app startup
       try {
-        const licenseStatus = await checkLicenseStatus();
+        setIsLoading(true);
         
-        if (licenseStatus.licensed) {
-          setLicenseTierState(licenseStatus.tier);
-          console.log('✅ License validated:', licenseStatus.message);
-          
-          // Show notification for expired license
-          if (licenseStatus.expired) {
-            setTimeout(() => {
-              showToast('License Expired', licenseStatus.message, 'warning');
-            }, 2000);
-          }
-        } else {
-          // No valid license, use Free tier
-          setLicenseTierState(TIER_NAMES.FREE);
-          
-          // Only show message if there was a license issue (not first time use)
-          const savedLicenseTier = localStorage.getItem('licenseTier');
-          if (savedLicenseTier && savedLicenseTier !== TIER_NAMES.FREE) {
-            console.log('⚠️ License validation failed, reverting to Free tier');
-            setTimeout(() => {
-              showToast('Notice', licenseStatus.message || 'Using Free tier', 'info');
-            }, 2000);
+        // Initialize and validate environment
+        const envResult = initializeEnvironment();
+        if (!envResult.env.valid || !envResult.stripe.valid) {
+          logger.warn('Environment validation warnings detected');
+        }
+        
+        const savedVendors = localStorage.getItem('vendors');
+        const savedAssessments = localStorage.getItem('assessments');
+        const savedTheme = localStorage.getItem('theme');
+
+        // Safely parse JSON from localStorage
+        if (savedVendors) {
+          try {
+            const parsed = JSON.parse(savedVendors);
+            if (Array.isArray(parsed)) {
+              setVendors(parsed);
+            }
+          } catch (error) {
+            logger.error('Error parsing saved vendors:', error);
+            localStorage.removeItem('vendors');
           }
         }
+        
+        if (savedAssessments) {
+          try {
+            const parsed = JSON.parse(savedAssessments);
+            if (Array.isArray(parsed)) {
+              setAssessments(parsed);
+            }
+          } catch (error) {
+            logger.error('Error parsing saved assessments:', error);
+            localStorage.removeItem('assessments');
+          }
+        }
+        
+        if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+          setTheme(savedTheme);
+        }
+
+        // Check license status on app startup
+        try {
+          const licenseStatus = await checkLicenseStatus();
+          
+          if (licenseStatus.licensed) {
+            setLicenseTierState(licenseStatus.tier);
+            logger.info('License validated:', licenseStatus.message);
+            
+            // Show notification for expired license
+            if (licenseStatus.expired) {
+              setTimeout(() => {
+                showToast('License Expired', licenseStatus.message, 'warning');
+              }, 2000);
+            }
+          } else {
+            // No valid license, use Free tier
+            setLicenseTierState(TIER_NAMES.FREE);
+            
+            // Only show message if there was a license issue (not first time use)
+            const savedLicenseTier = localStorage.getItem('licenseTier');
+            if (savedLicenseTier && savedLicenseTier !== TIER_NAMES.FREE) {
+              logger.warn('License validation failed, reverting to Free tier');
+              setTimeout(() => {
+                showToast('Notice', licenseStatus.message || 'Using Free tier', 'info');
+              }, 2000);
+            }
+          }
+        } catch (error) {
+          logger.error('Error checking license status:', error);
+          // Fallback to saved tier or Free
+          const savedLicenseTier = localStorage.getItem('licenseTier');
+          setLicenseTierState(savedLicenseTier || TIER_NAMES.FREE);
+        }
       } catch (error) {
-        console.error('Error checking license status:', error);
-        // Fallback to saved tier or Free
-        const savedLicenseTier = localStorage.getItem('licenseTier');
-        setLicenseTierState(savedLicenseTier || TIER_NAMES.FREE);
+        logger.error('Error loading initial data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadInitialData();
-  }, []);
+  }, [showToast]);
 
   // Apply theme
   useEffect(() => {
@@ -77,15 +125,23 @@ export const AppProvider = ({ children }) => {
 
   // Save vendors to localStorage
   useEffect(() => {
-    if (vendors.length > 0 || localStorage.getItem('vendors')) {
-      localStorage.setItem('vendors', JSON.stringify(vendors));
+    try {
+      if (vendors.length > 0 || localStorage.getItem('vendors')) {
+        localStorage.setItem('vendors', JSON.stringify(vendors));
+      }
+    } catch (error) {
+      logger.error('Error saving vendors to localStorage:', error);
     }
   }, [vendors]);
 
   // Save assessments to localStorage
   useEffect(() => {
-    if (assessments.length > 0 || localStorage.getItem('assessments')) {
-      localStorage.setItem('assessments', JSON.stringify(assessments));
+    try {
+      if (assessments.length > 0 || localStorage.getItem('assessments')) {
+        localStorage.setItem('assessments', JSON.stringify(assessments));
+      }
+    } catch (error) {
+      logger.error('Error saving assessments to localStorage:', error);
     }
   }, [assessments]);
 
@@ -193,21 +249,29 @@ export const AppProvider = ({ children }) => {
     showToast('Deleted', 'Assessment removed', 'warning');
   };
 
-  const calculateRiskScore = (vendor) => {
+  const calculateRiskScore = useCallback((vendor) => {
+    if (!vendor || typeof vendor !== 'object') {
+      return 50; // Default score for invalid vendor
+    }
+
     let score = 30; // Base score
     
     // Category risk
     if (vendor.category === 'strategic') score += 30;
     else if (vendor.category === 'operational') score += 20;
-    else score += 10;
+    else if (vendor.category === 'tactical') score += 10;
     
-    // Contract value risk
-    if (vendor.contractValue > 500000) score += 25;
-    else if (vendor.contractValue > 100000) score += 15;
+    // Contract value risk (handle both number and string)
+    const contractValue = typeof vendor.contractValue === 'string' 
+      ? parseFloat(vendor.contractValue) || 0 
+      : (vendor.contractValue || 0);
+    
+    if (contractValue > 500000) score += 25;
+    else if (contractValue > 100000) score += 15;
     else score += 5;
     
     // Data type risk
-    if (vendor.dataTypes) {
+    if (vendor.dataTypes && typeof vendor.dataTypes === 'string') {
       const types = vendor.dataTypes.toLowerCase();
       if (types.includes('pii') || types.includes('phi') || types.includes('financial')) {
         score += 20;
@@ -216,21 +280,26 @@ export const AppProvider = ({ children }) => {
     
     // Assessment recency
     if (vendor.lastAssessment) {
-      const daysSince = Math.floor((Date.now() - new Date(vendor.lastAssessment)) / (1000 * 60 * 60 * 24));
-      if (daysSince > 180) score += 15;
-      else if (daysSince > 90) score += 10;
-      else score -= 10;
+      try {
+        const assessmentDate = new Date(vendor.lastAssessment);
+        if (!isNaN(assessmentDate.getTime())) {
+          const daysSince = Math.floor((Date.now() - assessmentDate.getTime()) / (1000 * 60 * 60 * 24));
+          if (daysSince > 180) score += 15;
+          else if (daysSince > 90) score += 10;
+          else score -= 10;
+        } else {
+          score += 20;
+        }
+      } catch (error) {
+        logger.warn('Error parsing lastAssessment date:', error);
+        score += 20;
+      }
     } else {
       score += 20;
     }
     
     return Math.min(100, Math.max(0, score));
-  };
-
-  const showToast = (title, message, type = 'info') => {
-    setToast({ title, message, type, id: Date.now() });
-    setTimeout(() => setToast(null), 4000);
-  };
+  }, []);
 
   const generateSampleVendors = (count) => {
     const names = ['TechCorp', 'DataSystems', 'CloudServe', 'SecureNet', 'FinTech', 
@@ -277,6 +346,7 @@ export const AppProvider = ({ children }) => {
     toast,
     licenseTier,
     showUpgradeModal,
+    isLoading,
     toggleTheme,
     addVendor,
     updateVendor,

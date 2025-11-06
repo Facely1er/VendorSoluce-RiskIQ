@@ -23,10 +23,10 @@ const Dashboard = () => {
     exportDashboardToPDF(vendors, assessments, licenseTier);
   };
   
-  const critical = vendors.filter(v => v.riskScore >= 80).length;
-  const high = vendors.filter(v => v.riskScore >= 60 && v.riskScore < 80).length;
-  const medium = vendors.filter(v => v.riskScore >= 40 && v.riskScore < 60).length;
-  const low = vendors.filter(v => v.riskScore < 40).length;
+  const critical = vendors.filter(v => (v.riskScore ?? 0) >= 80).length;
+  const high = vendors.filter(v => (v.riskScore ?? 0) >= 60 && (v.riskScore ?? 0) < 80).length;
+  const medium = vendors.filter(v => (v.riskScore ?? 0) >= 40 && (v.riskScore ?? 0) < 60).length;
+  const low = vendors.filter(v => (v.riskScore ?? 0) < 40).length;
   
   const strategic = vendors.filter(v => v.category === 'strategic').length;
   const operational = vendors.filter(v => v.category === 'operational').length;

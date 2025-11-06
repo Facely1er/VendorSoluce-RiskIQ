@@ -5,6 +5,7 @@ import { getRiskLevel, getRiskBadgeClass, formatDate } from './helpers';
 import { getTemplatesByTier, getTemplateIcon, getTemplateCategories, initializeAssessmentScores } from './utils/assessmentTemplates';
 import { exportAssessmentToPDF } from './utils/pdfExport';
 import { canExportPDF, getUsagePercentage, isApproachingLimit, isAtLimit } from './utils/tierConfig';
+import { validateAssessmentForm } from './utils/validation';
 import './Assessments.css';
 
 const Assessments = () => {
@@ -74,22 +75,29 @@ const Assessments = () => {
     setShowModal(false);
   };
 
+  const [formErrors, setFormErrors] = useState({});
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    const vendor = vendors.find(v => v.id === formData.vendorId);
-    if (!vendor) {
-      alert('Please select a vendor');
+    const validation = validateAssessmentForm(formData);
+
+    if (!validation.valid) {
+      setFormErrors(validation.errors);
       return;
     }
 
+    const vendor = vendors.find(v => v.id === validation.data.vendorId);
+    if (!vendor) {
+      setFormErrors({ vendorId: 'Please select a vendor' });
+      return;
+    }
+
+    setFormErrors({});
+
     const assessmentData = {
-      ...formData,
-      vendorName: vendor.name,
-      securityScore: parseInt(formData.securityScore),
-      complianceScore: parseInt(formData.complianceScore),
-      financialScore: parseInt(formData.financialScore),
-      operationalScore: parseInt(formData.operationalScore)
+      ...validation.data,
+      vendorName: vendor.name
     };
 
     addAssessment(assessmentData);
