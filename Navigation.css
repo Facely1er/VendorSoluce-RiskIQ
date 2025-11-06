@@ -109,6 +109,7 @@
   border: 1px solid var(--border-color);
   padding: 6px;
   z-index: 1000;
+  pointer-events: auto;
 }
 
 [data-theme="dark"] .nav-dropdown-menu {
@@ -124,6 +125,8 @@
   color: var(--text-primary);
   font-size: 0.875rem;
   transition: all 0.2s ease;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .nav-dropdown-item:hover {
@@ -154,6 +157,8 @@
   white-space: nowrap;
   background: transparent;
   border: 2px solid transparent;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .nav-link:hover {

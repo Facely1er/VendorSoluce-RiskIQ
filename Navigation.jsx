@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -20,6 +20,24 @@ const Navigation = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    if (openDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openDropdown]);
 
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
@@ -68,7 +86,10 @@ const Navigation = () => {
     return items.some(item => location.pathname === item.path);
   };
 
-  const toggleDropdown = (label) => {
+  const toggleDropdown = (label, e) => {
+    if (e) {
+      e.stopPropagation();
+    }
     setOpenDropdown(openDropdown === label ? null : label);
   };
 
@@ -87,23 +108,30 @@ const Navigation = () => {
               if (item.type === 'dropdown') {
                 const isActive = isDropdownActive(item.items);
                 return (
-                  <div key={index} className="nav-dropdown-wrapper">
+                  <div key={index} className="nav-dropdown-wrapper" ref={openDropdown === item.label ? dropdownRef : null}>
                     <button
                       className={`nav-dropdown-toggle ${isActive ? 'active' : ''}`}
-                      onClick={() => toggleDropdown(item.label)}
+                      onClick={(e) => toggleDropdown(item.label, e)}
+                      type="button"
                     >
                       <item.icon size={18} />
                       <span>{item.label}</span>
                       <ChevronDown size={16} className={`nav-dropdown-arrow ${openDropdown === item.label ? 'open' : ''}`} />
                     </button>
                     {openDropdown === item.label && (
-                      <div className="nav-dropdown-menu">
+                      <div className="nav-dropdown-menu" onClick={(e) => e.stopPropagation()}>
                         {item.items.map((subItem, subIndex) => (
                           <NavLink
                             key={subIndex}
                             to={subItem.path}
                             className={({ isActive }) => `nav-dropdown-item ${isActive ? 'active' : ''}`}
-                            onClick={() => setOpenDropdown(null)}
+                            onClick={(e) => {
+                              setOpenDropdown(null);
+                              // Ensure navigation happens even if something tries to prevent it
+                              if (e.defaultPrevented) {
+                                window.location.href = subItem.path;
+                              }
+                            }}
                           >
                             {subItem.label}
                           </NavLink>
@@ -147,20 +175,27 @@ const Navigation = () => {
                   <div key={index} className="nav-mobile-dropdown">
                     <button
                       className={`nav-mobile-dropdown-toggle ${isActive ? 'active' : ''}`}
-                      onClick={() => toggleDropdown(item.label)}
+                      onClick={(e) => toggleDropdown(item.label, e)}
+                      type="button"
                     >
                       <item.icon size={18} />
                       <span>{item.label}</span>
                       <ChevronDown size={16} className={`nav-dropdown-arrow ${openDropdown === item.label ? 'open' : ''}`} />
                     </button>
                     {openDropdown === item.label && (
-                      <div className="nav-mobile-dropdown-menu">
+                      <div className="nav-mobile-dropdown-menu" onClick={(e) => e.stopPropagation()}>
                         {item.items.map((subItem, subIndex) => (
                           <NavLink
                             key={subIndex}
                             to={subItem.path}
                             className={({ isActive }) => `nav-mobile-dropdown-item ${isActive ? 'active' : ''}`}
-                            onClick={closeMobileMenu}
+                            onClick={(e) => {
+                              closeMobileMenu();
+                              // Ensure navigation happens even if something tries to prevent it
+                              if (e.defaultPrevented) {
+                                window.location.href = subItem.path;
+                              }
+                            }}
                           >
                             {subItem.label}
                           </NavLink>
