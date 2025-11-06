@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useApp } from './AppContext';
 import Header from './Header';
 import Navigation from './Navigation';
-import Footer from '../src/components/layout/Footer';
+import Footer from './src/components/layout/Footer';
 import Toast from './Toast';
 import LoadingSpinner from './components/LoadingSpinner';
 import './Layout.css';
