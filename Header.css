@@ -51,8 +51,9 @@
   width: auto;
   max-width: 48px;
   flex-shrink: 0;
-  display: block;
   object-fit: contain;
+  display: block;
+  opacity: 1;
 }
 
 .brand-text {
@@ -72,12 +73,16 @@
   color: var(--vendorsoluce-light-green);
 }
 
+[data-theme="dark"] .brand-tagline {
+  color: var(--vendorsoluce-light-green);
+}
+
 .brand-tagline {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
+  font-size: 0.875rem;
+  color: var(--vendorsoluce-green);
   margin: 0;
   line-height: 1.2;
-  font-weight: normal;
+  font-weight: 700;
 }
 
 .brand-tagline-secondary {

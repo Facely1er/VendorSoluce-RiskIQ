@@ -1,7 +1,7 @@
 {
   "name": "vendoriq-pro",
   "version": "2.0.0",
-  "description": "Enterprise Vendor Risk Management Platform",
+  "description": "Enterprise Vendor Risk Management Platform featuring Vendor Risk IQ assessments and Risk Radar dashboard",
   "private": true,
   "main": "electron-main.js",
   "homepage": "./",

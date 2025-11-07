@@ -1,3 +1,6 @@
+/* Import Monetization Feature Styles */
+@import './monetization-styles.css';
+
 /* VendorSoluce Design System */
 :root {
   /* Light Theme Colors */
@@ -335,6 +338,3 @@ body {
 .btn-icon svg {
   margin: 0;
 }
-
-/* Import Monetization Feature Styles */
-@import './monetization-styles.css';

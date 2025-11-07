@@ -123,8 +123,8 @@ const Assessments = () => {
     <div className="page-content assessments-page">
       <div className="page-header">
         <div>
-          <h2>Risk Assessments</h2>
-          <p>Conduct and track vendor risk assessments</p>
+          <h2>Vendor Risk IQ</h2>
+          <p>Comprehensive vendor risk assessments with NIST SP 800-161 compliance</p>
           {tierLimits.maxAssessments !== Infinity && (
             <div className="usage-indicator">
               <span className={approaching ? 'usage-warning' : ''}>

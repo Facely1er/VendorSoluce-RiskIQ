@@ -78,7 +78,7 @@ const Navigation = () => {
       label: 'Risk Assessment',
       icon: Layers,
       items: [
-        { path: '/assessments', label: 'VendorIQ' },
+        { path: '/assessments', label: 'Vendor Risk IQ' },
         { path: '/dashboard', label: 'Risk Radar' },
         { path: '/dashboard', label: 'Risk Calculator' }
       ]
