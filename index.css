@@ -109,6 +109,8 @@ body {
   max-width: 1800px;
   margin: 0 auto;
   padding: 0 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .fade-in {
@@ -270,6 +272,68 @@ body {
   .no-print {
     display: none !important;
   }
+}
+
+/* Global Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--growth-green);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--trust-mint-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--trust-mint);
+  color: var(--growth-green);
+  border: 1px solid var(--growth-green);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--growth-green);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--danger-red);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #B71C1C;
+}
+
+.btn-icon {
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.btn-icon svg {
+  margin: 0;
 }
 
 /* Import Monetization Feature Styles */

@@ -4,8 +4,14 @@
   position: sticky;
   top: 80px;
   z-index: 99;
-  padding: 0.5rem 0;
+  padding: 0;
   transition: all 0.3s ease;
+  width: 100%;
+}
+
+.app-nav .container {
+  padding: 0.5rem 2rem;
+  width: 100%;
 }
 
 .nav-content {
@@ -13,6 +19,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .nav-desktop {

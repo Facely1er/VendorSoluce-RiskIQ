@@ -8,6 +8,8 @@
   flex: 1;
   padding: 2rem 0;
   animation: fadeIn 0.3s ease;
+  width: 100%;
+  min-height: calc(100vh - 200px);
 }
 
 .app-main-homepage {

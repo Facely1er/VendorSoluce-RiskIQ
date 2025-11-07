@@ -2,6 +2,24 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../VendorSoluce-WorkSpace/vendorsoluce-riskradar-main"
+		},
+		{
+			"path": "../VendorSoluce-WorkSpace/vendorsoluceplatform-main"
+		},
+		{
+			"path": "../VendorSoluce-WorkSpace/vendorsoluce.com-main (4)"
+		},
+		{
+			"path": "../VendorSoluce-WorkSpace/VendorSolucePortal-main (3)"
+		},
+		{
+			"path": "../VendorTal-byERMITS"
+		},
+		{
+			"path": "../SBOM-Analyzer"
 		}
 	],
 	"settings": {}

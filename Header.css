@@ -5,8 +5,17 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 1rem 0;
+  padding: 0;
   transition: all 0.3s ease;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.app-header .container {
+  padding: 1rem 2rem;
+  width: 100%;
 }
 
 .header-content {
@@ -15,6 +24,7 @@
   align-items: center;
   gap: 2rem;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .brand {
@@ -38,8 +48,11 @@
 
 .brand-logo {
   height: 48px;
-  width: 48px;
+  width: auto;
+  max-width: 48px;
   flex-shrink: 0;
+  display: block;
+  object-fit: contain;
 }
 
 .brand-text {
