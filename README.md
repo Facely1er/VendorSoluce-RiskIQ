@@ -1,13 +1,15 @@
-# VendorIQ Pro - React Application
+# VendorSoluce RiskIQ - Vendor Risk Management Platform
 
-Enterprise Vendor Risk Management Platform built with React, featuring dual-theme support and modern UI/UX.
+Enterprise Vendor Risk Management Platform featuring **Vendor Risk IQ** assessments and **Risk Radar** dashboard. Built with React, featuring dual-theme support and modern UI/UX.
 
 ## 🚀 Features
 
+- **Vendor Risk IQ** - Comprehensive vendor risk assessment framework with NIST SP 800-161 compliance
+- **Risk Radar** - Interactive dashboard for real-time vendor risk monitoring and visualization
 - **Modern React Architecture** - Built with React 18, Vite, and React Router
 - **Dual Theme Support** - Professional light theme and sleek dark theme
 - **Vendor Management** - Complete CRUD operations for vendor data
-- **Risk Assessment** - Automated risk scoring and assessment tracking
+- **Automated Risk Scoring** - Multi-dimensional risk evaluation across security, compliance, financial, and operational domains
 - **Analytics Dashboard** - Real-time charts and insights
 - **Data Management** - Import/export, backup/restore functionality
 - **Responsive Design** - Works beautifully on all devices
@@ -25,7 +27,6 @@ Enterprise Vendor Risk Management Platform built with React, featuring dual-them
 ### Option 1: Using npm
 
 ```bash
-cd react-vendoriq
 npm install
 npm run dev
 ```
@@ -33,7 +34,6 @@ npm run dev
 ### Option 2: Using yarn
 
 ```bash
-cd react-vendoriq
 yarn install
 yarn dev
 ```
@@ -43,7 +43,7 @@ The application will open automatically at `http://localhost:3000`
 ## 📁 Project Structure
 
 ```
-react-vendoriq/
+workspace/
 ├── public/              # Static assets
 ├── src/
 │   ├── components/      # Reusable UI components
@@ -130,7 +130,7 @@ npm run build
 Create a `.env` file in the root directory:
 
 ```env
-VITE_APP_TITLE=VendorIQ Pro
+VITE_APP_TITLE=VendorSoluce RiskIQ
 VITE_API_URL=https://your-api.com
 ```
 
@@ -148,11 +148,21 @@ VITE_API_URL=https://your-api.com
 - Search and filter capabilities
 - Category-based organization
 
-### Risk Assessment
-- Multi-dimensional risk evaluation
-- Security, compliance, financial, and operational scores
+### Vendor Risk IQ
+- Comprehensive vendor risk assessment framework
+- NIST SP 800-161 compliant assessment templates
+- Multi-dimensional risk evaluation (Security, Compliance, Financial, Operational)
 - Assessment history tracking
 - Automated risk level calculation
+- Framework gap analysis
+
+### Risk Radar
+- Real-time vendor risk monitoring dashboard
+- Interactive risk distribution visualization
+- Risk trend analysis over time
+- Vendor category breakdowns
+- Critical risk alert system
+- Portfolio-level risk metrics
 
 ### Analytics
 - Real-time dashboard metrics
@@ -255,9 +265,9 @@ For issues or questions:
    - Generate sample assessments
 
 4. **Explore features**:
-   - View dashboard metrics
+   - View Risk Radar dashboard
    - Add/edit vendors
-   - Create risk assessments
+   - Create Vendor Risk IQ assessments
    - Export reports
 
 ## 🔄 Updates & Maintenance

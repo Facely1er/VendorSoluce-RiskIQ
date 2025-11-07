@@ -30,7 +30,7 @@ const ValuePropositionSection = () => {
       ],
       solutions: [
         {
-          title: 'VendorIQ Assessment',
+          title: 'Vendor Risk IQ Assessment',
           description: 'Comprehensive vendor risk assessment with automated scoring and NIST mapping.',
           benefits: [
             'Automated risk scoring across multiple dimensions',
@@ -42,15 +42,16 @@ const ValuePropositionSection = () => {
           link: '/assessments'
         },
         {
-          title: 'Risk Monitoring',
-          description: 'Continuous vendor risk monitoring with real-time alerts and threat intelligence.',
+          title: 'Risk Radar Dashboard',
+          description: 'Continuous vendor risk monitoring with real-time alerts and threat intelligence through interactive Risk Radar visualization.',
           benefits: [
             'Real-time threat intelligence integration',
+            'Interactive risk radar visualization',
             'Automated risk change alerts',
             'Comprehensive risk reporting',
             'Continuous compliance monitoring'
           ],
-          cta: 'View Dashboard',
+          cta: 'View Risk Radar',
           link: '/dashboard'
         }
       ]
