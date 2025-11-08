@@ -22,5 +22,7 @@
 			"path": "../SBOM-Analyzer"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"powershell.cwd": "SBOM-Analyzer"
+	}
 }
