@@ -1,0 +1,22 @@
+[
+  {
+    "fileName": "main-overview.mdc",
+    "description": "Complete system overview covering the risk management platform architecture, tier system, and core assessment framework"
+  },
+  {
+    "fileName": "risk-scoring-algorithms.mdc",
+    "description": "Detailed documentation of risk calculation algorithms, including vendor categorization weights, assessment scoring formulas, and risk level thresholds"
+  },
+  {
+    "fileName": "data-models.mdc",
+    "description": "Comprehensive documentation of data models for vendors, assessments, assets, and their relationships, including tier-specific constraints"
+  },
+  {
+    "fileName": "assessment-framework.mdc",
+    "description": "Technical documentation of the assessment templates, compliance frameworks (NIST, SOC2, GDPR, etc.), and scoring methodologies"
+  },
+  {
+    "fileName": "tier-management-flow.mdc",
+    "description": "Documentation of tier-based feature gates, usage tracking system, and subscription management logic"
+  }
+]
